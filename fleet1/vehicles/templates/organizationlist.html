@@ -1,0 +1,29 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of all organizations
+{% endblock %}
+
+{% block content %}
+  <h1>Organization List</h1>
+
+  {% if organization_list.all %}
+  <table>
+    <thead>
+      <th>Name</th><th>Contact Email</th><th>More</th>
+    </thead>
+    {% for org in organization_list %}
+      <tr>
+        <td>{{ org.org_name }}</td>
+        <td>{{ org.org_contact_email }}</td>
+        <td><a href="org_details/{{ org.id }}">Details</a></td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    Please click on the link below to add an organization <br>
+  {% endif %}
+  
+  <hr>
+  <a href="org_create">Add a new organization</a>
+{% endblock %}

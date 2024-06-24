@@ -1,0 +1,18 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Add a new organization
+{% endblock %}
+
+{% block content %}
+  <h1>Create a new Organization</h1>
+  <form action="/org_createsub" method="post">
+    {% csrf_token %}
+    <input type="text" name="org_name" id="org_name" placeholder="Organization Name">
+    <input type="email" name="org_contact_email" id="org_contact_email" placeholder="Organization Contact Email">
+    <input type="submit" value="Create">
+  </form>
+
+  <hr>
+  <p>Back to <a href="/organization">Organization List</a></p>
+{% endblock %}

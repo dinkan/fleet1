@@ -1,0 +1,18 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Organization Details
+{% endblock %}
+
+{% block content %}
+  <h1>{{ organization.org_name }}</h1>
+  
+  <p>Organization Name: {{ organization.org_name }}</p>
+  <p>Organization Contact Email: {{ organization.org_contact_email }}</p>
+
+  <a href="/org_update/{{ organization.id }}">Update the entry</a></p>
+  <a href="/org_deletesub/{{ organization.id }}">Delete this entry</a></p>
+
+  <hr>
+  <p>Back to <a href="/organization">Organization List</a></p>
+{% endblock %}

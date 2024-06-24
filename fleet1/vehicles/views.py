@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle
+from .models import vehicle, Organization
 
 def vehicles(request):
   vehiclelist = vehicle.objects.all().values()
@@ -75,10 +75,59 @@ def createsub(request):
   return response
 
 
+def organization(request):
+    organization_list = Organization.objects.all().values()
+    template = loader.get_template('organizationlist.html')
+    context = {
+        'organization_list': organization_list,
+    }
+    return HttpResponse(template.render(context, request))
+
+def org_details(request, id):
+    organization = Organization.objects.get(id=id)
+    template = loader.get_template('org_details.html')
+    context = {
+        'organization': organization,
+    }
+    return HttpResponse(template.render(context, request))
+
+def org_create(request):
+    template = loader.get_template('org_create.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
+
+def org_createsub(request):
+    org_name = request.POST["org_name"]
+    org_contact_email = request.POST["org_contact_email"]
+    organization = Organization(org_name=org_name, org_contact_email=org_contact_email)
+    organization.save()
+    return redirect('/organization')
+
+def org_update(request, id):
+    organization = Organization.objects.get(id=id)
+    template = loader.get_template('org_update.html')
+    context = {
+        'organization': organization,
+    }
+    return HttpResponse(template.render(context, request))
+
+def org_updatesub(request, id):
+    organization = Organization.objects.get(id=id)
+    organization.org_name = request.POST["org_name"]
+    organization.org_contact_email = request.POST["org_contact_email"]
+    organization.save()
+    return redirect('/organization')
+
+def org_deletesub(request, id):
+    organization = Organization.objects.get(id=id)
+    organization.delete()
+    return redirect('/organization')
+
+
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer  
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer
 
   
 class vehicleView(APIView):    
@@ -93,3 +142,17 @@ class vehicleView(APIView):
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)  
         else:  
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)  
+        
+class OrganizationView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = Organization.objects.all()
+        serializers = OrganizationSerializer(result, many=True)
+        return Response({'status': 'success', "organizations": serializers.data}, status=200)
+
+    def post(self, request):
+        serializer = OrganizationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
