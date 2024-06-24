@@ -1,0 +1,21 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+Add a new vehicle details
+{% endblock %}
+
+
+{% block content %}
+<h1>Create a new Entry</h1>
+<form action="/createsub" method="post">
+    {% csrf_token %}
+<input type="text" name="vehnumber" id="vehnumber" value="{{ thisvehicle.vehnumber }}">
+<input type="text" name="name" id="name" value="{{ thisvehicle.name }}">
+
+<input type="submit" value="Create">
+</form>
+
+<HR>
+<p>Back to <a href="/vehicles">vehicle List</a></p>
+
+{% endblock %}

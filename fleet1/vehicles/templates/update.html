@@ -1,0 +1,21 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+Update the details of {{ thisvehicle.name }}
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Update the details of {{ thisvehicle.name }} </h1>
+<form action="/updatesub/{{thisvehicle.id}}" method="post">
+    {% csrf_token %}
+<input type="text" name="vehnumber" id="vehnumber" value="{{ thisvehicle.vehnumber }}">
+<input type="text" name="name" id="name" value="{{ thisvehicle.name }}">
+
+<input type="submit" value="Update">
+</form>
+<HR>
+<p>Back to <a href="/vehicles">vehicle List</a></p>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of all vehicles
+{% endblock %}
+
+
+{% block content %}
+  <h1>Vehicle List</h1>
+  
+    {% if vehiclelist.all %}
+    <table>
+      <thead>
+        <th>Number</th><th>Name of the vehicle</th><th>More</th>
+      </thead>
+    
+    {% for x in vehiclelist %}
+      <tr><td>{{ x.vehnumber }}</td><td> {{ x.name }}</td>
+        <td><a href="details/{{ x.id }}"> Details</a></td>
+        </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  Please click on the link below to add a vehicle <BR>
+  {% endif %}
+  
+  <HR>
+  <a href="create"> Add a new vehicle</a>
+    
+
+  {% endblock %}
