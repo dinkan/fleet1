@@ -1,0 +1,18 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Update Parking Lot for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Update Parking Lot for {{ organization.org_name }}</h1>
+  <form action="{% url 'parkinglot_updatesub' organization.id parkinglot.id %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="name" id="name" value="{{ parkinglot.name }}">
+    <input type="text" name="address" id="address" value="{{ parkinglot.address }}">
+    <input type="submit" value="Update">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'parkinglots' organization.id %}">Parking Lots List</a></p>
+{% endblock %}

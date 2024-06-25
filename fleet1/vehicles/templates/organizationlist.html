@@ -16,7 +16,10 @@
       <tr>
         <td>{{ org.org_name }}</td>
         <td>{{ org.org_contact_email }}</td>
-        <td><a href="org_details/{{ org.id }}">Details</a></td>
+        <td>
+          <a href="org_details/{{ org.id }}">Details</a>
+          <a href="{% url 'parkinglots' org.id %}">Parking Lots</a>
+        </td>
       </tr>
     {% endfor %}
   </table>

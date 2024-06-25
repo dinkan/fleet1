@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 
 # Create your views here.
 
@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization
+from .models import vehicle, Organization, ParkingLot
 
 def vehicles(request):
   vehiclelist = vehicle.objects.all().values()
@@ -123,11 +123,57 @@ def org_deletesub(request, id):
     organization.delete()
     return redirect('/organization')
 
+def parkinglots(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    parkinglot_list = organization.parkinglots.all()
+    template = loader.get_template('parkinglotlist.html')
+    context = {
+        'organization': organization,
+        'parkinglot_list': parkinglot_list,
+    }
+    return HttpResponse(template.render(context, request))
+
+def parkinglot_create(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    template = loader.get_template('parkinglot_create.html')
+    context = {'organization': organization}
+    return HttpResponse(template.render(context, request))
+
+def parkinglot_createsub(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    name = request.POST["name"]
+    address = request.POST["address"]
+    parkinglot = ParkingLot(organization=organization, name=name, address=address)
+    parkinglot.save()
+    return redirect(f'/organization/{org_id}/parkinglots')
+
+def parkinglot_update(request, org_id, pl_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    parkinglot = get_object_or_404(ParkingLot, id=pl_id)
+    template = loader.get_template('parkinglot_update.html')
+    context = {
+        'organization': organization,
+        'parkinglot': parkinglot,
+    }
+    return HttpResponse(template.render(context, request))
+
+def parkinglot_updatesub(request, org_id, pl_id):
+    parkinglot = get_object_or_404(ParkingLot, id=pl_id)
+    parkinglot.name = request.POST["name"]
+    parkinglot.address = request.POST["address"]
+    parkinglot.save()
+    return redirect(f'/organization/{org_id}/parkinglots')
+
+def parkinglot_deletesub(request, org_id, pl_id):
+    parkinglot = get_object_or_404(ParkingLot, id=pl_id)
+    parkinglot.delete()
+    return redirect(f'/organization/{org_id}/parkinglots')
+
 
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer
 
   
 class vehicleView(APIView):    
@@ -151,6 +197,20 @@ class OrganizationView(APIView):
 
     def post(self, request):
         serializer = OrganizationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class ParkingLotView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = ParkingLot.objects.all()
+        serializers = ParkingLotSerializer(result, many=True)
+        return Response({'status': 'success', "parkinglots": serializers.data}, status=200)
+
+    def post(self, request):
+        serializer = ParkingLotSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

@@ -1,0 +1,33 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of Parking Lots for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Parking Lots for {{ organization.org_name }}</h1>
+  
+  {% if parkinglot_list %}
+  <table>
+    <thead>
+      <th>Name</th><th>Address</th><th>Actions</th>
+    </thead>
+    {% for parkinglot in parkinglot_list %}
+      <tr>
+        <td>{{ parkinglot.name }}</td>
+        <td>{{ parkinglot.address }}</td>
+        <td>
+          <a href="{% url 'parkinglot_update' organization.id parkinglot.id %}">Update</a>
+          <a href="{% url 'parkinglot_deletesub' organization.id parkinglot.id %}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    No parking lots found. Please add a new parking lot.
+  {% endif %}
+  
+  <hr>
+  <a href="{% url 'parkinglot_create' organization.id %}">Add a new parking lot</a>
+  <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
+{% endblock %}

@@ -19,4 +19,11 @@ urlpatterns = [
     path('org_updatesub/<int:id>', views.org_updatesub, name='org_updatesub'),
     path('org_deletesub/<int:id>', views.org_deletesub, name='org_deletesub'),
     path('api/organization/', views.OrganizationView.as_view()),
+    path('organization/<int:org_id>/parkinglots', views.parkinglots, name='parkinglots'),
+    path('organization/<int:org_id>/parkinglot_create', views.parkinglot_create, name='parkinglot_create'),
+    path('organization/<int:org_id>/parkinglot_createsub', views.parkinglot_createsub, name='parkinglot_createsub'),
+    path('organization/<int:org_id>/parkinglot_update/<int:pl_id>', views.parkinglot_update, name='parkinglot_update'),
+    path('organization/<int:org_id>/parkinglot_updatesub/<int:pl_id>', views.parkinglot_updatesub, name='parkinglot_updatesub'),
+    path('organization/<int:org_id>/parkinglot_deletesub/<int:pl_id>', views.parkinglot_deletesub, name='parkinglot_deletesub'),
+    path('api/parkinglots/', views.ParkingLotView.as_view()),
 ]
