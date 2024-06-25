@@ -42,6 +42,13 @@ def updatesub(request, id):
   mymember = vehicle.objects.get(id=id)
   mymember.vehnumber=request.POST["vehnumber"]
   mymember.name=request.POST["name"]
+  mymember.vehicle_id = request.POST.get("vehicle_id")
+  mymember.vehicle = request.POST.get("vehicle")
+  mymember.size = request.POST.get("size")
+  mymember.year = request.POST.get("year")
+  mymember.cost = request.POST.get("cost")
+  mymember.yearly_range_km = request.POST.get("yearly_range_km")
+  mymember.distance = request.POST.get("distance")
   mymember.save()
   #return HttpResponse("Record updated")
   response = redirect('/vehicles')
@@ -69,7 +76,14 @@ def create(request):
 def createsub(request):
   vehnumber=request.POST["vehnumber"]
   name=request.POST["name"]
-  mymember = vehicle(vehnumber=vehnumber,name=name)
+  vehicle_id = request.POST.get("vehicle_id")
+  vehicle_type  = request.POST.get("vehicle")
+  size = request.POST.get("size")
+  year = request.POST.get("year")
+  cost = request.POST.get("cost")
+  yearly_range_km = request.POST.get("yearly_range_km")
+  distance = request.POST.get("distance")
+  mymember = vehicle(vehnumber=vehnumber,name=name,vehicle_id=vehicle_id,vehicle=vehicle_type,size=size,year=year,cost=cost,yearly_range_km=yearly_range_km,distance=distance)
   mymember.save()
   response = redirect('/vehicles')
   return response

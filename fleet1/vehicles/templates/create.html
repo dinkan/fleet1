@@ -9,8 +9,15 @@ Add a new vehicle details
 <h1>Create a new Entry</h1>
 <form action="/createsub" method="post">
     {% csrf_token %}
-<input type="text" name="vehnumber" id="vehnumber" value="{{ thisvehicle.vehnumber }}">
-<input type="text" name="name" id="name" value="{{ thisvehicle.name }}">
+<input type="text" name="vehnumber" id="vehnumber" value="{{ thisvehicle.vehnumber }}" placeholder="Vehicle Number"><br>
+<input type="text" name="name" id="name" value="{{ thisvehicle.name }}" placeholder="Name"><br>
+<input type="text" name="vehicle_id" id="vehicle_id" value="{{ thisvehicle.vehicle_id }}" placeholder="Vehicle ID"><br>
+<input type="text" name="vehicle" id="vehicle" value="{{ thisvehicle.vehicle }}" placeholder="Vehicle"><br>
+<input type="text" name="size" id="size" value="{{ thisvehicle.size }}" placeholder="Size"><br>
+<input type="text" name="year" id="year" value="{{ thisvehicle.year }}" placeholder="Year"><br>
+<input type="text" name="cost" id="cost" value="{{ thisvehicle.cost }}" placeholder="Cost ($)"><br>
+<input type="text" name="yearly_range_km" id="yearly_range_km" value="{{ thisvehicle.yearly_range_km }}" placeholder="Yearly range (km)"><br>
+<input type="text" name="distance" id="distance" value="{{ thisvehicle.distance }}" placeholder="Distance"><br>
 
 <input type="submit" value="Create">
 </form>

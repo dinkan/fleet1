@@ -6,6 +6,13 @@ from django.db import models
 class vehicle(models.Model):
   vehnumber = models.IntegerField()
   name = models.CharField(max_length=255)
+  vehicle_id = models.CharField(max_length=50, null=True, blank=True)
+  vehicle = models.CharField(max_length=255, null=True, blank=True)
+  size = models.CharField(max_length=50, null=True, blank=True)
+  year = models.IntegerField(null=True, blank=True)
+  cost = models.FloatField(null=True, blank=True)
+  yearly_range_km = models.IntegerField(null=True, blank=True)
+  distance = models.CharField(max_length=50, null=True, blank=True)
   
   def __str__(self):
       return self.name

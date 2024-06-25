@@ -13,7 +13,14 @@ class vehicleSerializer(serializers.ModelSerializer):
   
     def update(self, instance, validated_data):  
         instance.name = validated_data.get('name', instance.name)  
-        instance.vehnumber = validated_data.get('vehnumber', instance.vehnumber)  
+        instance.vehnumber = validated_data.get('vehnumber', instance.vehnumber)
+        instance.vehicle_id = validated_data.get('vehicle_id', instance.vehicle_id)
+        instance.vehicle = validated_data.get('vehicle', instance.vehicle)
+        instance.size = validated_data.get('size', instance.size)
+        instance.year = validated_data.get('year', instance.year)
+        instance.cost = validated_data.get('cost', instance.cost)
+        instance.yearly_range_km = validated_data.get('yearly_range_km', instance.yearly_range_km)
+        instance.distance = validated_data.get('distance', instance.distance)  
         instance.save()  
         return instance  
 

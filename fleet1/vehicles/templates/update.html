@@ -10,8 +10,15 @@ Update the details of {{ thisvehicle.name }}
 <h1>Update the details of {{ thisvehicle.name }} </h1>
 <form action="/updatesub/{{thisvehicle.id}}" method="post">
     {% csrf_token %}
-<input type="text" name="vehnumber" id="vehnumber" value="{{ thisvehicle.vehnumber }}">
-<input type="text" name="name" id="name" value="{{ thisvehicle.name }}">
+<input type="text" name="vehnumber" id="vehnumber" value="{{ thisvehicle.vehnumber }}"><br>
+<input type="text" name="name" id="name" value="{{ thisvehicle.name }}"><br>
+<input type="text" name="vehicle_id" id="vehicle_id" value="{{ thisvehicle.vehicle_id }}"><br>
+<input type="text" name="vehicle" id="vehicle" value="{{ thisvehicle.vehicle }}"><br>
+<input type="text" name="size" id="size" value="{{ thisvehicle.size }}"><br>
+<input type="text" name="year" id="year" value="{{ thisvehicle.year }}"><br>
+<input type="text" name="cost" id="cost" value="{{ thisvehicle.cost }}"><br>
+<input type="text" name="yearly_range_km" id="yearly_range_km" value="{{ thisvehicle.yearly_range_km }}"><br>
+<input type="text" name="distance" id="distance" value="{{ thisvehicle.distance }}"><br>
 
 <input type="submit" value="Update">
 </form>
