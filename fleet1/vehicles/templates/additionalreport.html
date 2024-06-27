@@ -1,0 +1,28 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+Additional Report for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+    <h1>Additional Report for {{ organization.org_name }}</h1>
+
+    <table border style="border-collapse: collapse; border: 1px solid black;">
+        <thead>
+            <tr>
+                <th>Vehicle (Total: {{ total_vehicles }})</th>
+                <th>Total Count (Sum: {{ total_count_sum }})</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in report %}
+            <tr>
+                <td style="text-align: center;">{{ item.vehicle__name }}</td>
+                <td style="text-align: center;">{{ item.total_count }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <hr>
+    <p>Back to <a href="{% url 'warehouseinventory_list' organization.id %}">Warehouse Inventory List</a></p>
+{% endblock %}

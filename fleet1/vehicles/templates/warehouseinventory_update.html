@@ -1,0 +1,44 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Update Warehouse Inventory for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+    <h1>Update Warehouse Inventory for {{ organization.org_name }}</h1>
+    <form action="{% url 'warehouseinventory_updatesub' organization.id warehouseinventory.id %}" method="post">
+        {% csrf_token %}
+        <p>
+            <label for="warehouse">Warehouse:</label>
+            <select name="warehouse" id="warehouse">
+                {% for parkinglot in parkinglots %}
+                    <option value="{{ parkinglot.id }}" {% if parkinglot.id == warehouseinventory.warehouse.id %}selected{% endif %}>{{ parkinglot.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="vehicle">Vehicle:</label>
+            <select name="vehicle" id="vehicle">
+                {% for veh in vehicles %}
+                    <option value="{{ veh.id }}" {% if veh.id == warehouseinventory.vehicle.id %}selected{% endif %}>{{ veh.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="date_of_purchase">Date of Purchase:</label>
+            <input type="date" name="date_of_purchase" id="date_of_purchase" value="{{ warehouseinventory.date_of_purchase|date:'Y-m-d' }}">
+        </p>
+        <p>
+            <label for="cost_of_purchase">Cost of Purchase:</label>
+            <input type="text" name="cost_of_purchase" id="cost_of_purchase" value="{{ warehouseinventory.cost_of_purchase }}">
+        </p>
+        <p>
+            <label for="count">Count:</label>
+            <input type="number" name="count" id="count" value="{{ warehouseinventory.count }}">
+        </p>
+        <button type="submit">Update</button>
+    </form>
+
+    <hr>
+    <p>Back to <a href="{% url 'warehouseinventory_list' organization.id %}">Warehouse Inventory List</a></p>
+{% endblock %}

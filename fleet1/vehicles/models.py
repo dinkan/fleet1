@@ -31,3 +31,14 @@ class ParkingLot(models.Model):
 
     def __str__(self):
         return self.name
+    
+class WarehouseInventory(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='inventory')
+    warehouse = models.ForeignKey(ParkingLot, on_delete=models.CASCADE, related_name='warehouse_inventory')
+    vehicle = models.ForeignKey(vehicle, on_delete=models.CASCADE, related_name='vehicle_inventory')
+    date_of_purchase = models.DateField()
+    cost_of_purchase = models.FloatField()
+    count = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.warehouse.name} - {self.vehicle.name}"

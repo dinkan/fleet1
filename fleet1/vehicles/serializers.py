@@ -1,5 +1,5 @@
 from rest_framework import serializers  
-from .models import vehicle, Organization, ParkingLot
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory
   
 class vehicleSerializer(serializers.ModelSerializer):  
     name = serializers.CharField(max_length=200, required=True)  
@@ -55,5 +55,23 @@ class ParkingLotSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.address = validated_data.get('address', instance.address)
+        instance.save()
+        return instance
+    
+class WarehouseInventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WarehouseInventory
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return WarehouseInventory.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.organization = validated_data.get('organization', instance.organization)
+        instance.warehouse = validated_data.get('warehouse', instance.warehouse)
+        instance.vehicle = validated_data.get('vehicle', instance.vehicle)
+        instance.date_of_purchase = validated_data.get('date_of_purchase', instance.date_of_purchase)
+        instance.cost_of_purchase = validated_data.get('cost_of_purchase', instance.cost_of_purchase)
+        instance.count = validated_data.get('count', instance.count)
         instance.save()
         return instance

@@ -8,7 +8,7 @@
   <h1>Organization List</h1>
 
   {% if organization_list.all %}
-  <table>
+  <table border style="border-collapse: collapse; border: 1px solid black;">
     <thead>
       <th>Name</th><th>Contact Email</th><th>More</th>
     </thead>
@@ -17,8 +17,9 @@
         <td>{{ org.org_name }}</td>
         <td>{{ org.org_contact_email }}</td>
         <td>
-          <a href="org_details/{{ org.id }}">Details</a>
-          <a href="{% url 'parkinglots' org.id %}">Parking Lots</a>
+          <a href="org_details/{{ org.id }}">Details</a> 
+          | <a href="{% url 'parkinglots' org.id %}">Parking Lots</a> 
+          | <a href="{% url 'warehouseinventory_list' org.id %}">Warehouse Inventories</a>
         </td>
       </tr>
     {% endfor %}

@@ -1,0 +1,44 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Add a new Warehouse Inventory for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+    <h1>Create a new Warehouse Inventory for {{ organization.org_name }}</h1>
+    <form action="{% url 'warehouseinventory_createsub' organization.id %}" method="post">
+        {% csrf_token %}
+        <p>
+            <label for="warehouse">Warehouse:</label>
+            <select name="warehouse" id="warehouse">
+                {% for parkinglot in parkinglots %}
+                    <option value="{{ parkinglot.id }}">{{ parkinglot.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="vehicle">Vehicle:</label>
+            <select name="vehicle" id="vehicle">
+                {% for veh in vehicles %}
+                    <option value="{{ veh.id }}">{{ veh.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="date_of_purchase">Date of Purchase:</label>
+            <input type="date" name="date_of_purchase" id="date_of_purchase">
+        </p>
+        <p>
+            <label for="cost_of_purchase">Cost of Purchase:</label>
+            <input type="text" name="cost_of_purchase" id="cost_of_purchase">
+        </p>
+        <p>
+            <label for="count">Count:</label>
+            <input type="number" name="count" id="count">
+        </p>
+        <button type="submit">Create</button>
+    </form>
+
+    <hr>
+    <p>Back to <a href="{% url 'warehouseinventory_list' organization.id %}">Warehouse Inventory List</a></p>
+{% endblock %}

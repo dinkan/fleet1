@@ -26,4 +26,12 @@ urlpatterns = [
     path('organization/<int:org_id>/parkinglot_updatesub/<int:pl_id>', views.parkinglot_updatesub, name='parkinglot_updatesub'),
     path('organization/<int:org_id>/parkinglot_deletesub/<int:pl_id>', views.parkinglot_deletesub, name='parkinglot_deletesub'),
     path('api/parkinglots/', views.ParkingLotView.as_view()),
+    path('organization/<int:org_id>/warehouseinventory/', views.warehouseinventory_list, name='warehouseinventory_list'),
+    path('organization/<int:org_id>/warehouseinventory_create/', views.warehouseinventory_create, name='warehouseinventory_create'),
+    path('organization/<int:org_id>/warehouseinventory_createsub/', views.warehouseinventory_createsub, name='warehouseinventory_createsub'),
+    path('organization/<int:org_id>/warehouseinventory_update/<int:inventory_id>/', views.warehouseinventory_update, name='warehouseinventory_update'),
+    path('organization/<int:org_id>/warehouseinventory_updatesub/<int:inventory_id>/', views.warehouseinventory_updatesub, name='warehouseinventory_updatesub'),
+    path('organization/<int:org_id>/warehouseinventory_deletesub/<int:inventory_id>/', views.warehouseinventory_deletesub, name='warehouseinventory_deletesub'),
+    path('api/warehouseinventory/', views.WarehouseInventoryView.as_view()),
+    path('organization/<int:org_id>/warehouseinventory/additionalreport', views.additionalreport, name='additionalreport'),
 ]

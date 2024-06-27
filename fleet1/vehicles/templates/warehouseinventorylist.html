@@ -1,0 +1,37 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of Warehouse Inventories for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+    <h1>Warehouse Inventory List for {{ organization.org_name }}</h1>
+
+    {% if inventory_list %}
+        <table border style="border-collapse: collapse; border: 1px solid black;">
+            <thead>
+                <th>Warehouse</th><th>Vehicle</th><th>Date of Purchase</th><th>Cost of Purchase</th><th>Count</th><th>Actions</th>
+            </thead>
+            {% for item in inventory_list %}
+            <tr>
+                <td>{{ item.warehouse.name }}</td>
+                <td>{{ item.vehicle.name }}</td>
+                <td>{{ item.date_of_purchase }}</td>
+                <td>{{ item.cost_of_purchase}}</td>
+                <td>{{ item.count }}</td>
+                <td>
+                    <a href="{% url 'warehouseinventory_update' organization.id item.id %}">Update</a> 
+                    | <a href="{% url 'warehouseinventory_deletesub' organization.id item.id %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+      No warehouse inventories found. Please add a new warehouse inventory.
+    {% endif %}
+
+    <hr>
+    <p><a href="{% url 'warehouseinventory_create' organization.id %}">Add a new warehouse inventory</a></p>
+    <p><a href="{% url 'additionalreport' organization.id %}">View Additional Report</a></p>
+    <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
+{% endblock %}

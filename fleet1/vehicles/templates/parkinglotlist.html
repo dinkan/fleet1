@@ -8,7 +8,7 @@
   <h1>Parking Lots for {{ organization.org_name }}</h1>
   
   {% if parkinglot_list %}
-  <table>
+  <table border style="border-collapse: collapse; border: 1px solid black;">
     <thead>
       <th>Name</th><th>Address</th><th>Actions</th>
     </thead>
@@ -17,8 +17,8 @@
         <td>{{ parkinglot.name }}</td>
         <td>{{ parkinglot.address }}</td>
         <td>
-          <a href="{% url 'parkinglot_update' organization.id parkinglot.id %}">Update</a>
-          <a href="{% url 'parkinglot_deletesub' organization.id parkinglot.id %}">Delete</a>
+          <a href="{% url 'parkinglot_update' organization.id parkinglot.id %}">Update</a> 
+          | <a href="{% url 'parkinglot_deletesub' organization.id parkinglot.id %}">Delete</a>
         </td>
       </tr>
     {% endfor %}
@@ -28,6 +28,6 @@
   {% endif %}
   
   <hr>
-  <a href="{% url 'parkinglot_create' organization.id %}">Add a new parking lot</a>
+  <p><a href="{% url 'parkinglot_create' organization.id %}">Add a new parking lot</a></p>
   <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
 {% endblock %}
