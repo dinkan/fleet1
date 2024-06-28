@@ -11,9 +11,11 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction
 
 from django.db.models import Sum
+
+from django.core.exceptions import ValidationError
 
 def vehicles(request):
   vehiclelist = vehicle.objects.all().values()
@@ -213,10 +215,13 @@ def warehouseinventory_createsub(request, org_id):
     vehicle_id = request.POST["vehicle"]
     date_of_purchase = request.POST["date_of_purchase"]
     cost_of_purchase = request.POST["cost_of_purchase"]
-    count = request.POST["count"]
+    count = int(request.POST["count"])
 
     warehouse = get_object_or_404(ParkingLot, id=warehouse_id)
     vehicle_instance = get_object_or_404(vehicle, id=vehicle_id)
+
+    if count < 0:
+        raise ValidationError("Count cannot be less than 0.")
 
     inventory = WarehouseInventory(
         organization=organization,
@@ -249,7 +254,13 @@ def warehouseinventory_updatesub(request, org_id, inventory_id):
     inventory.vehicle_id = request.POST["vehicle"]
     inventory.date_of_purchase = request.POST["date_of_purchase"]
     inventory.cost_of_purchase = request.POST["cost_of_purchase"]
-    inventory.count = request.POST["count"]
+    count = int(request.POST["count"])
+
+    if count < 0:
+        raise ValidationError("Count cannot be less than 0.")
+    
+    inventory.count = count
+
     inventory.save()
     return redirect(f'/organization/{org_id}/warehouseinventory')
 
@@ -271,6 +282,11 @@ def additionalreport(request, org_id):
         'total_count_sum': total_count_sum
     }
     return HttpResponse(template.render(context, request))
+
+def transaction_report(request, organization_id):
+    organization = Organization.objects.get(id=organization_id)
+    transactions = Transaction.objects.filter(organization=organization)
+    return render(request, 'transaction_report.html', {'transactions': transactions, 'organization':organization})
 
 from rest_framework.views import APIView  
 from rest_framework.response import Response  

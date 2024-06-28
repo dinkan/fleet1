@@ -34,4 +34,5 @@ urlpatterns = [
     path('organization/<int:org_id>/warehouseinventory_deletesub/<int:inventory_id>/', views.warehouseinventory_deletesub, name='warehouseinventory_deletesub'),
     path('api/warehouseinventory/', views.WarehouseInventoryView.as_view()),
     path('organization/<int:org_id>/warehouseinventory/additionalreport', views.additionalreport, name='additionalreport'),
+    path('transactions/<int:organization_id>/', views.transaction_report, name='transaction_report'),
 ]

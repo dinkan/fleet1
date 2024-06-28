@@ -33,5 +33,6 @@
     <hr>
     <p><a href="{% url 'warehouseinventory_create' organization.id %}">Add a new warehouse inventory</a></p>
     <p><a href="{% url 'additionalreport' organization.id %}">View Additional Report</a></p>
+    <p><a href="{% url 'transaction_report' organization.id %}">View Transaction Report</a></p>
     <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
 {% endblock %}

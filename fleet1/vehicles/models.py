@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 # Create your models here.
 
 
@@ -30,7 +30,7 @@ class ParkingLot(models.Model):
     address = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"{self.organization.org_name} - {self.name}"
     
 class WarehouseInventory(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='inventory')
@@ -41,4 +41,15 @@ class WarehouseInventory(models.Model):
     count = models.IntegerField()
 
     def __str__(self):
-        return f"{self.warehouse.name} - {self.vehicle.name}"
+        return f"{self.organization.org_name} - {self.warehouse.name} - {self.vehicle.name} ({self.count})"
+    
+class Transaction(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    details = models.TextField()
+    expense = models.FloatField()
+    income = models.FloatField(default=0.0)
+    reference_id = models.ForeignKey(WarehouseInventory, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.organization.org_name} - {self.reference_id.warehouse.name} - {self.date.strftime('%Y-%m-%d %H:%M:%S')}"
