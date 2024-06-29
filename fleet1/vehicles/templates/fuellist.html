@@ -1,0 +1,34 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of all Fuels
+{% endblock %}
+
+
+{% block content %}
+  <h1>Fuel List</h1>
+  
+    {% if fuellist %}
+    <table border="1" style="border-collapse: collapse;">
+      <thead>
+        <th>Fuel</th><th>Year</th><th>Emissions per unit_fuel</th><th>Cost per unit_fuel</th><th>Cost Uncertainty</th><th>Actions</th>
+      </thead>
+    
+    {% for f in fuellist %}
+        <tr><td>{{ f.fuel_type }}</td><td>{{ f.year }}</td><td>{{ f.emissions_per_unit_fuel }}</td><td>{{ f.cost_per_unit_fuel }}</td><td>{{ f.cost_uncertainty }}</td>
+            <td>
+                <a href="{% url 'fuel_update' f.id %}">Update</a> 
+                | <a href="{% url 'fuel_deletesub' f.id %}">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  Please click on the link below to add a fuel <BR>
+  {% endif %}
+  
+  <HR>
+  <a href="{% url 'fuel_create' %}"> Add a new fuel</a>
+    
+
+  {% endblock %}

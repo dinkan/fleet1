@@ -1,0 +1,34 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of all Vehicle Fuels
+{% endblock %}
+
+
+{% block content %}
+  <h1>Vehicle Fuel List</h1>
+  
+    {% if vehiclefuellist %}
+    <table border="1" style="border-collapse: collapse;">
+      <thead>
+        <tr><th>ID</th><th>Fuel</th><th>Consumption per km</th><th>Actions</th></tr>
+      </thead>
+    
+    {% for vehf in vehiclefuellist %}
+        <tr><td>{{ vehf.vehicle_id.vehicle_id }}</td><td>{{ vehf.fuel.fuel_type }} ({{ vehf.fuel.year }})</td><td>{{ vehf.consumption_per_km }}</td>
+            <td>
+                <a href="{% url 'vehicle_fuel_update' vehf.id %}">Update</a> 
+                | <a href="{% url 'vehicle_fuel_deletesub' vehf.id %}">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  Please click on the link below to add a vehicle fuel <BR>
+  {% endif %}
+  
+  <HR>
+  <a href="{% url 'vehicle_fuel_create' %}"> Add a new vehicle fuel</a>
+    
+
+  {% endblock %}

@@ -1,0 +1,21 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Add a new fuel
+{% endblock %}
+
+{% block content %}
+  <h1>Create a new Fuel</h1>
+  <form action="{% url 'fuel_createsub' %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="fuel_type" id="fuel_type" placeholder="Fuel type"><br>
+    <input type="text" name="year" id="year" placeholder="Year"><br>
+    <input type="text" name="emissions_per_unit_fuel" id="emissions_per_unit_fuel" placeholder="Emissions per unit_fuel"><br>
+    <input type="text" name="cost_per_unit_fuel" id="cost_per_unit_fuel" placeholder="Cost per unit_fuel"><br>
+    <input type="text" name="cost_uncertainty" id="cost_uncertainty" placeholder="Cost uncertainty"><br>
+    <input type="submit" value="Create">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'fuels' %}">Fuel List</a></p>
+{% endblock %}

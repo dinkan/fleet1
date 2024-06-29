@@ -1,0 +1,36 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Add a new Vehicle Fuel
+{% endblock %}
+
+{% block content %}
+    <h1>Create a new Vehicle Fuel</h1>
+    <form action="{% url 'vehicle_fuel_createsub' %}" method="post">
+        {% csrf_token %}
+        <p>
+            <label for="vehicle_id">ID:</label>
+            <select name="vehicle_id" id="vehicle_id">
+                {% for vehicle in vehicles %}
+                    <option value="{{ vehicle.id }}">{{ vehicle.vehicle_id }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="fuel_id">Fuel:</label>
+            <select name="fuel_id" id="fuel_id">
+                {% for fuel in fuels %}
+                    <option value="{{ fuel.id }}" >{{ fuel.fuel_type }} ({{ fuel.year }})</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="consumption_per_km">Consumption per km:</label>
+            <input type="text" name="consumption_per_km" id="consumption_per_km">
+        </p>
+        <button type="submit">Create</button>
+    </form>
+
+    <hr>
+    <p>Back to <a href="{% url 'vehicle_fuels' %}">Vehicle Fuel List</a></p>
+{% endblock %}

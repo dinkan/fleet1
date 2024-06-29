@@ -15,7 +15,7 @@ class vehicle(models.Model):
   distance = models.CharField(max_length=50, null=True, blank=True)
   
   def __str__(self):
-      return self.name
+      return f"{self.name} ({self.vehicle_id})" if self.vehicle_id else self.name
 
 class Organization(models.Model):
     org_name = models.CharField(max_length=255)
@@ -53,3 +53,21 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.organization.org_name} - {self.reference_id.warehouse.name} - {self.date.strftime('%Y-%m-%d %H:%M:%S')}"
+    
+class Fuel(models.Model):
+    fuel_type = models.CharField(max_length=50)
+    year = models.IntegerField()
+    emissions_per_unit_fuel = models.FloatField()
+    cost_per_unit_fuel = models.FloatField()
+    cost_uncertainty = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.fuel_type} ({self.year})"
+
+class VehicleFuel(models.Model):
+    vehicle_id = models.ForeignKey(vehicle, on_delete=models.CASCADE, related_name='vehicle_ids', null=True, blank=True)
+    fuel = models.ForeignKey(Fuel, on_delete=models.CASCADE, related_name='fuels')
+    consumption_per_km = models.FloatField()
+
+    def __str__(self):
+        return f"{self.vehicle_id.vehicle_id} - {self.fuel.fuel_type} ({self.fuel.year})"

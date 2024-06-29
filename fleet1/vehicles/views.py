@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel
 
 from django.db.models import Sum
 
@@ -288,10 +288,110 @@ def transaction_report(request, organization_id):
     transactions = Transaction.objects.filter(organization=organization)
     return render(request, 'transaction_report.html', {'transactions': transactions, 'organization':organization})
 
+def fuels(request):
+    fuellist = Fuel.objects.all().values()
+    template = loader.get_template('fuellist.html')
+    context = {
+        'fuellist': fuellist,
+    }
+    return HttpResponse(template.render(context, request))
+
+def fuel_update(request, id):
+    fuel = get_object_or_404(Fuel, id=id)
+    template = loader.get_template('fuel_update.html')
+    context = {
+        'fuel': fuel,
+    }
+    return HttpResponse(template.render(context, request))
+
+def fuel_updatesub(request, id):
+    fuel = get_object_or_404(Fuel, id=id)
+    fuel.fuel_type = request.POST["fuel_type"]
+    fuel.year = request.POST["year"]
+    fuel.emissions_per_unit_fuel = request.POST["emissions_per_unit_fuel"]
+    fuel.cost_per_unit_fuel = request.POST["cost_per_unit_fuel"]
+    fuel.cost_uncertainty = request.POST["cost_uncertainty"]
+    fuel.save()
+    response = redirect('fuels')
+    return response 
+
+def fuel_deletesub(request, id):
+    fuel = get_object_or_404(Fuel, id=id)
+    fuel.delete()
+    response = redirect('fuels')
+    return response  
+
+def fuel_create(request):
+    template = loader.get_template('fuel_create.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
+
+def fuel_createsub(request):
+    fuel_type = request.POST["fuel_type"]
+    year = request.POST["year"]
+    emissions_per_unit_fuel = request.POST["emissions_per_unit_fuel"]
+    cost_per_unit_fuel = request.POST["cost_per_unit_fuel"]
+    cost_uncertainty = request.POST["cost_uncertainty"]
+    fuel = Fuel(fuel_type=fuel_type, year=year, emissions_per_unit_fuel=emissions_per_unit_fuel, cost_per_unit_fuel=cost_per_unit_fuel, cost_uncertainty=cost_uncertainty)
+    fuel.save()
+    response = redirect('fuels')
+    return response
+
+def vehicle_fuels(request):
+    vehiclefuellist = VehicleFuel.objects.all()
+
+    template = loader.get_template('vehiclefuellist.html')
+    context = {
+        'vehiclefuellist': vehiclefuellist,
+    }
+    return HttpResponse(template.render(context, request))
+
+def vehicle_fuel_update(request, id):
+    vehicle_fuel = get_object_or_404(VehicleFuel, id=id)
+    template = loader.get_template('vehicle_fuel_update.html')
+    context = {
+        'vehicle_fuel': vehicle_fuel,
+        'vehicles': vehicle.objects.all(),
+        'fuels': Fuel.objects.all(),
+    }
+    return HttpResponse(template.render(context, request))
+
+def vehicle_fuel_updatesub(request, id):
+    vehicle_fuel = get_object_or_404(VehicleFuel, id=id)
+    vehicle_fuel.vehicle_id = get_object_or_404(vehicle, id=request.POST["vehicle_id"])
+    vehicle_fuel.fuel = get_object_or_404(Fuel, id=request.POST["fuel"])
+    vehicle_fuel.consumption_per_km = request.POST["consumption_per_km"]
+    vehicle_fuel.save()
+    response = redirect('/vehicle_fuels')
+    return response  
+
+def vehicle_fuel_deletesub(request, id):
+    vehicle_fuel = get_object_or_404(VehicleFuel, id=id)
+    vehicle_fuel.delete()
+    response = redirect('/vehicle_fuels')
+    return response  
+
+def vehicle_fuel_create(request):
+    template = loader.get_template('vehicle_fuel_create.html')
+    context = {
+        'vehicles': vehicle.objects.all(),
+        'fuels': Fuel.objects.all(),
+    }
+    return HttpResponse(template.render(context, request))
+
+def vehicle_fuel_createsub(request):
+    vehicle_id = get_object_or_404(vehicle, id=request.POST["vehicle_id"])
+    fuel_id = get_object_or_404(Fuel, id=request.POST["fuel_id"])
+    consumption_per_km = request.POST["consumption_per_km"]
+    vehicle_fuel = VehicleFuel(vehicle_id=vehicle_id, fuel=fuel_id, consumption_per_km=consumption_per_km)
+    vehicle_fuel.save()
+    response = redirect('/vehicle_fuels')
+    return response
+
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer
 
   
 class vehicleView(APIView):    
@@ -347,4 +447,32 @@ class WarehouseInventoryView(APIView):
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class FuelView(APIView):    
+    def get(self, request, *args, **kwargs):  
+        result = Fuel.objects.all()  
+        serializers = FuelSerializer(result, many=True)  
+        return Response({'status': 'success', "fuel": serializers.data}, status=200)  
+    
+    def post(self, request):  
+        serializer = FuelSerializer(data=request.data)  
+        if serializer.is_valid():  
+            serializer.save()  
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)  
+        else:  
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)  
+
+class VehicleFuelView(APIView):    
+    def get(self, request, *args, **kwargs):  
+        result = VehicleFuel.objects.all()  
+        serializers = VehicleFuelSerializer(result, many=True)  
+        return Response({'status': 'success', "vehicle_fuel": serializers.data}, status=200)  
+    
+    def post(self, request):  
+        serializer = VehicleFuelSerializer(data=request.data)  
+        if serializer.is_valid():  
+            serializer.save()  
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)  
+        else:  
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

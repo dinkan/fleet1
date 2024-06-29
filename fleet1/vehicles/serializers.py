@@ -1,5 +1,5 @@
 from rest_framework import serializers  
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel
   
 class vehicleSerializer(serializers.ModelSerializer):  
     name = serializers.CharField(max_length=200, required=True)  
@@ -75,3 +75,39 @@ class WarehouseInventorySerializer(serializers.ModelSerializer):
         instance.count = validated_data.get('count', instance.count)
         instance.save()
         return instance
+    
+class FuelSerializer(serializers.ModelSerializer):  
+    fuel_type = serializers.CharField(max_length=50, required=True)  
+    year = serializers.IntegerField()  
+    
+    class Meta:  
+        model = Fuel
+        fields = '__all__'  
+  
+    def create(self, validated_data):  
+        return Fuel.objects.create(**validated_data)  
+  
+    def update(self, instance, validated_data):  
+        instance.fuel_type = validated_data.get('fuel_type', instance.fuel_type)  
+        instance.year = validated_data.get('year', instance.year)
+        instance.emissions_per_unit_fuel = validated_data.get('emissions_per_unit_fuel', instance.emissions_per_unit_fuel)
+        instance.cost_per_unit_fuel = validated_data.get('cost_per_unit_fuel', instance.cost_per_unit_fuel)
+        instance.cost_uncertainty = validated_data.get('cost_uncertainty', instance.cost_uncertainty)
+        instance.save()  
+        return instance  
+
+class VehicleFuelSerializer(serializers.ModelSerializer):  
+    
+    class Meta:  
+        model = VehicleFuel
+        fields = '__all__'  
+  
+    def create(self, validated_data):  
+        return VehicleFuel.objects.create(**validated_data)  
+  
+    def update(self, instance, validated_data):  
+        instance.vehicle_id = validated_data.get('vehicle_id', instance.vehicle_id)  
+        instance.fuel = validated_data.get('fuel', instance.fuel)
+        instance.consumption_per_km = validated_data.get('consumption_per_km', instance.consumption_per_km)
+        instance.save()  
+        return instance 

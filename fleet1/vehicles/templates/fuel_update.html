@@ -1,0 +1,21 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+Update the details of {{ fuel.fuel_type }}
+{% endblock %}
+
+{% block content %}
+    <h1>Update the details of {{ fuel.fuel_type }}</h1>
+    <form action="{% url 'fuel_updatesub' fuel.id %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="fuel_type" id="fuel_type" value="{{ fuel.fuel_type }}"><br>
+        <input type="text" name="year" id="year" value="{{ fuel.year }}"><br>
+        <input type="text" name="emissions_per_unit_fuel" id="emissions_per_unit_fuel" value="{{ fuel.emissions_per_unit_fuel }}"><br>
+        <input type="text" name="cost_per_unit_fuel" id="cost_per_unit_fuel" value="{{ fuel.cost_per_unit_fuel }}"><br>
+        <input type="text" name="cost_uncertainty" id="cost_uncertainty" value="{{ fuel.cost_uncertainty }}"><br>
+        <input type="submit" value="Update">
+    </form>
+
+    <HR>
+    <p>Back to <a href="{% url 'fuels' %}">Fuel List</a></p>
+{% endblock %}
