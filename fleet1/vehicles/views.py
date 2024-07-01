@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget, FleetDemand
 
 from django.db.models import Sum
 
@@ -435,10 +435,61 @@ def emission_target_deletesub(request, id):
     emission_target.delete()
     return redirect(f'/emissiontargetlist/{org_id}')
 
+def fleet_demand_list(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    fleet_demands = FleetDemand.objects.filter(organization=organization).values()
+    template = loader.get_template('fleetdemand_list.html')
+    context = {
+        'organization': organization,
+        'fleet_demands': fleet_demands,
+    }
+    return HttpResponse(template.render(context, request))
+
+def fleet_demand_create(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    template = loader.get_template('fleetdemand_create.html')
+    context = {
+        'organization': organization,
+    }
+    return HttpResponse(template.render(context, request))
+
+def fleet_demand_createsub(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    year = request.POST["year"]
+    size = request.POST["size"]
+    distance = request.POST["distance"]
+    demand = request.POST["demand"]
+    fleet_demand = FleetDemand(organization=organization, year=year, size=size, distance=distance, demand=demand)
+    fleet_demand.save()
+    return redirect('fleet_demand_list', org_id=org_id)
+
+def fleet_demand_update(request, id):
+    fleet_demand = get_object_or_404(FleetDemand, id=id)
+    template = loader.get_template('fleetdemand_update.html')
+    context = {
+        'fleet_demand': fleet_demand,
+    }
+    return HttpResponse(template.render(context, request))
+
+def fleet_demand_updatesub(request, id):
+    fleet_demand = get_object_or_404(FleetDemand, id=id)
+    fleet_demand.year = request.POST["year"]
+    fleet_demand.size = request.POST["size"]
+    fleet_demand.distance = request.POST["distance"]
+    fleet_demand.demand = request.POST["demand"]
+    fleet_demand.save()
+    return redirect('fleet_demand_list', org_id=fleet_demand.organization.id)
+
+def fleet_demand_deletesub(request, id):
+    fleet_demand = get_object_or_404(FleetDemand, id=id)
+    org_id = fleet_demand.organization.id
+    fleet_demand.delete()
+    return redirect('fleet_demand_list', org_id=org_id)
+
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer
 
   
 class vehicleView(APIView):    
@@ -532,6 +583,20 @@ class EmissionTargetView(APIView):
 
     def post(self, request):
         serializer = EmissionTargetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class FleetDemandView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = FleetDemand.objects.all()
+        serializers = FleetDemandSerializer(result, many=True)
+        return Response({'status': 'success', "fleet_demands": serializers.data}, status=200)
+
+    def post(self, request):
+        serializer = FleetDemandSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

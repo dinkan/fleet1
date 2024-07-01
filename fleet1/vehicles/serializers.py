@@ -1,5 +1,5 @@
 from rest_framework import serializers  
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget, FleetDemand
 
 class vehicleSerializer(serializers.ModelSerializer):  
     name = serializers.CharField(max_length=200, required=True)  
@@ -126,5 +126,24 @@ class EmissionTargetSerializer(serializers.ModelSerializer):
         instance.organization = validated_data.get('organization', instance.organization)
         instance.year = validated_data.get('year', instance.year)
         instance.carbon_emission = validated_data.get('carbon_emission', instance.carbon_emission)
+        instance.save()
+        return instance
+    
+class FleetDemandSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(queryset=Organization.objects.all())
+
+    class Meta:
+        model = FleetDemand
+        fields = ('__all__')
+
+    def create(self, validated_data):
+        return FleetDemand.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.organization = validated_data.get('organization', instance.organization)
+        instance.year = validated_data.get('year', instance.year)
+        instance.size = validated_data.get('size', instance.size)
+        instance.distance = validated_data.get('distance', instance.distance)
+        instance.demand = validated_data.get('demand', instance.demand)
         instance.save()
         return instance

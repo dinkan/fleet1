@@ -79,3 +79,13 @@ class EmissionTarget(models.Model):
 
     def __str__(self):
         return f'{self.organization.org_name} - {self.year}'
+    
+class FleetDemand(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    size = models.CharField(max_length=255)
+    distance = models.CharField(max_length=255)
+    demand = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.organization.org_name} - {self.year} - {self.demand} km"

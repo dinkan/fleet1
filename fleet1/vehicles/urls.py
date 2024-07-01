@@ -56,4 +56,11 @@ urlpatterns = [
     path('emissiontarget_updatesub/<int:id>', views.emission_target_updatesub, name='emission_target_updatesub'),
     path('emissiontarget_deletesub/<int:id>', views.emission_target_deletesub, name='emission_target_deletesub'),
     path('api/emissiontarget/', views.EmissionTargetView.as_view()),
+    path('fleetdemandlist/<int:org_id>', views.fleet_demand_list, name='fleet_demand_list'),
+    path('fleetdemand_create/<int:org_id>', views.fleet_demand_create, name='fleet_demand_create'),
+    path('fleetdemand_createsub/<int:org_id>', views.fleet_demand_createsub, name='fleet_demand_createsub'),
+    path('fleetdemand_update/<int:id>', views.fleet_demand_update, name='fleet_demand_update'),
+    path('fleetdemand_updatesub/<int:id>', views.fleet_demand_updatesub, name='fleet_demand_updatesub'),
+    path('fleetdemand_deletesub/<int:id>', views.fleet_demand_deletesub, name='fleet_demand_deletesub'),
+    path('api/fleetdemand/', views.FleetDemandView.as_view()),
 ]

@@ -1,0 +1,34 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+    Fleet Demand List for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+    <h1>Fleet Demand List for {{ organization.org_name }}</h1>
+    {% if fleet_demands %}
+    <table border="1" style="border-collapse: collapse;">
+        <thead>
+            <th>Year</th><th>Size</th><th>Distance</th><th>Demand (km)</th><th>Actions</th>
+        </thead>
+        {% for fleet_demand in fleet_demands %}
+        <tr>
+            <td>{{ fleet_demand.year }}</td>
+            <td>{{ fleet_demand.size }}</td>
+            <td>{{ fleet_demand.distance }}</td>
+            <td>{{ fleet_demand.demand }}</td>
+            <td>
+                <a href="{% url 'fleet_demand_update' fleet_demand.id %}">Update</a>
+                | <a href="{% url 'fleet_demand_deletesub' fleet_demand.id %}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        No fleet demands found. Please add a new fleet demand below.
+    {% endif %}
+
+    <hr>
+    <a href="{% url 'fleet_demand_create' organization.id %}">Add a new fleet demand</a>
+    <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
+{% endblock %}
