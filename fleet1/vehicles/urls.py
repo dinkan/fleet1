@@ -49,4 +49,11 @@ urlpatterns = [
     path('vehicle_fuel_create/', views.vehicle_fuel_create, name='vehicle_fuel_create'),
     path('vehicle_fuel_createsub/', views.vehicle_fuel_createsub, name='vehicle_fuel_createsub'),
     path('api/vehicle_fuels/', views.VehicleFuelView.as_view()),
+    path('emissiontargetlist/<int:org_id>', views.emission_target_list, name='emission_target_list'),
+    path('emissiontarget_create/<int:org_id>', views.emission_target_create, name='emission_target_create'),
+    path('emissiontarget_createsub/<int:org_id>', views.emission_target_createsub, name='emission_target_createsub'),
+    path('emissiontarget_update/<int:id>', views.emission_target_update, name='emission_target_update'),
+    path('emissiontarget_updatesub/<int:id>', views.emission_target_updatesub, name='emission_target_updatesub'),
+    path('emissiontarget_deletesub/<int:id>', views.emission_target_deletesub, name='emission_target_deletesub'),
+    path('api/emissiontarget/', views.EmissionTargetView.as_view()),
 ]

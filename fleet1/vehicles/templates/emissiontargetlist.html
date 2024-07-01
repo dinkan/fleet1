@@ -1,0 +1,33 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Emission Targets for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Emission Targets for {{ organization.org_name }}</h1>
+
+  {% if emission_target_list.all %}
+  <table border="1" style="border-collapse: collapse;">
+    <thead>
+      <th>Year</th><th>Carbon Emission (CO2/kg)</th><th>More</th>
+    </thead>
+    {% for et in emission_target_list %}
+      <tr>
+        <td>{{ et.year }}</td>
+        <td>{{ et.carbon_emission }}</td>
+        <td>
+            <a href="{% url 'emission_target_update' et.id %}">Update</a> 
+            | <a href="{% url 'emission_target_deletesub' et.id %}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    No emission targets available.
+  {% endif %}
+  
+  <hr>
+  <a href="{% url 'emission_target_create' organization.id %}">Add a new emission target</a>
+  <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
+{% endblock %}

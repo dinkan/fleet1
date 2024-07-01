@@ -71,3 +71,11 @@ class VehicleFuel(models.Model):
 
     def __str__(self):
         return f"{self.vehicle_id.vehicle_id} - {self.fuel.fuel_type} ({self.fuel.year})"
+    
+class EmissionTarget(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    year = models.PositiveIntegerField()
+    carbon_emission = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'{self.organization.org_name} - {self.year}'

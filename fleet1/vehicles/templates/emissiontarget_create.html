@@ -1,0 +1,18 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Add a new emission target
+{% endblock %}
+
+{% block content %}
+  <h1>Create a new Emission Target for {{ organization.org_name }}</h1>
+  <form action="{% url 'emission_target_createsub' organization.id %}" method="post">
+    {% csrf_token %}
+    <input type="number" name="year" id="year" placeholder="Year">
+    <input type="number" name="carbon_emission" id="carbon_emission" placeholder="Carbon Emission (CO2/kg)">
+    <input type="submit" value="Create">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'emission_target_list' organization.id %}">Emission Target List</a></p>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Update the emission target for {{ emission_target.organization.org_name }} - {{ emission_target.year }}
+{% endblock %}
+
+{% block content %}
+  <h1>Update the emission target for {{ emission_target.organization.org_name }} - {{ emission_target.year }}</h1>
+  <form action="{% url 'emission_target_updatesub' emission_target.id %}" method="post">
+    {% csrf_token %}
+    <input type="number" name="year" id="year" value="{{ emission_target.year }}">
+    <input type="number" name="carbon_emission" id="carbon_emission" value="{{ emission_target.carbon_emission }}">
+    <input type="submit" value="Update">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'emission_target_list' emission_target.organization.id %}">Emission Target List</a></p>
+{% endblock %}

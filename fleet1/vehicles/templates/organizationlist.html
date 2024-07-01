@@ -20,6 +20,7 @@
           <a href="org_details/{{ org.id }}">Details</a> 
           | <a href="{% url 'parkinglots' org.id %}">Parking Lots</a> 
           | <a href="{% url 'warehouseinventory_list' org.id %}">Warehouse Inventories</a>
+          | <a href="{% url 'emission_target_list' org.id %}">Emission Target</a>
         </td>
       </tr>
     {% endfor %}

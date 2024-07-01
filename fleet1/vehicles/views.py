@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget
 
 from django.db.models import Sum
 
@@ -388,10 +388,57 @@ def vehicle_fuel_createsub(request):
     response = redirect('/vehicle_fuels')
     return response
 
+def emission_target_list(request, org_id):
+    emission_target_list = EmissionTarget.objects.filter(organization_id=org_id)
+    organization = get_object_or_404(Organization, id=org_id)
+    template = loader.get_template('emissiontargetlist.html')
+    context = {
+        'emission_target_list': emission_target_list,
+        'organization': organization,
+    }
+    return HttpResponse(template.render(context, request))
+
+def emission_target_create(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    template = loader.get_template('emissiontarget_create.html')
+    context = {
+        'organization': organization,
+    }
+    return HttpResponse(template.render(context, request))
+
+def emission_target_createsub(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    year = request.POST["year"]
+    carbon_emission = request.POST["carbon_emission"]
+    emission_target = EmissionTarget(organization=organization, year=year, carbon_emission=carbon_emission)
+    emission_target.save()
+    return redirect(f'/emissiontargetlist/{org_id}')
+
+def emission_target_update(request, id):
+    emission_target = get_object_or_404(EmissionTarget, id=id)
+    template = loader.get_template('emissiontarget_update.html')
+    context = {
+        'emission_target': emission_target,
+    }
+    return HttpResponse(template.render(context, request))
+
+def emission_target_updatesub(request, id):
+    emission_target = get_object_or_404(EmissionTarget, id=id)
+    emission_target.year = request.POST["year"]
+    emission_target.carbon_emission = request.POST["carbon_emission"]
+    emission_target.save()
+    return redirect(f'/emissiontargetlist/{emission_target.organization.id}')
+
+def emission_target_deletesub(request, id):
+    emission_target = get_object_or_404(EmissionTarget, id=id)
+    org_id = emission_target.organization.id
+    emission_target.delete()
+    return redirect(f'/emissiontargetlist/{org_id}')
+
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer
 
   
 class vehicleView(APIView):    
@@ -475,4 +522,18 @@ class VehicleFuelView(APIView):
             serializer.save()  
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)  
         else:  
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class EmissionTargetView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = EmissionTarget.objects.all()
+        serializers = EmissionTargetSerializer(result, many=True)
+        return Response({'status': 'success', "emission_targets": serializers.data}, status=200)
+
+    def post(self, request):
+        serializer = EmissionTargetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
