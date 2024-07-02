@@ -6,6 +6,25 @@
 
 {% block content %}
   <h1>{{ organization.org_name }}</h1>
+
+  <table border="1" style="border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>Fuel</th>
+        <th>Number</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fuel in fuel_counts %}
+      <tr>
+        <td>{{ fuel.fuel__fuel_type }} ({{fuel.fuel__year}})</td>
+        <td>{{ fuel.vehicle_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p>Expense: <b>{{ total_expense }}</b> , Income: <b>{{ total_income }}</b></p>
   
   <p>Organization Name: {{ organization.org_name }}</p>
   <p>Organization Contact Email: {{ organization.org_contact_email }}</p>

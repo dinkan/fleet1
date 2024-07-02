@@ -103,9 +103,22 @@ def organization(request):
 
 def org_details(request, id):
     organization = Organization.objects.get(id=id)
+    fuel_counts = (
+        VehicleFuel.objects
+        .filter(vehicle_id__vehicle_inventory__organization=organization)
+        .values('fuel__fuel_type','fuel__year')
+        .annotate(vehicle_count=Sum('vehicle_id__vehicle_inventory__count'))
+        .order_by('fuel__fuel_type')
+    )
+    transactions = Transaction.objects.filter(organization=organization)
+    total_expense = transactions.aggregate(Sum('expense'))['expense__sum'] or 0.0
+    total_income = transactions.aggregate(Sum('income'))['income__sum'] or 0.0
     template = loader.get_template('org_details.html')
     context = {
         'organization': organization,
+        'fuel_counts': fuel_counts,
+        'total_expense': total_expense,
+        'total_income': total_income,
     }
     return HttpResponse(template.render(context, request))
 
