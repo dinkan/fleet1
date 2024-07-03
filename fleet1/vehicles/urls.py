@@ -63,4 +63,12 @@ urlpatterns = [
     path('fleetdemand_updatesub/<int:id>', views.fleet_demand_updatesub, name='fleet_demand_updatesub'),
     path('fleetdemand_deletesub/<int:id>', views.fleet_demand_deletesub, name='fleet_demand_deletesub'),
     path('api/fleetdemand/', views.FleetDemandView.as_view()),
+    path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distancetravelledlist/', views.distancetravelledlist, name='distancetravelledlist'),
+    path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_details/<int:distance_id>/', views.distance_travelled_details, name='distance_travelled_details'),
+    path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_create/', views.distance_travelled_create, name='distance_travelled_create'),
+    path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_createsub/', views.distance_travelled_createsub, name='distance_travelled_createsub'),
+    path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_update/<int:distance_id>/', views.distance_travelled_update, name='distance_travelled_update'),
+    path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_updatesub/<int:distance_id>/', views.distance_travelled_updatesub, name='distance_travelled_updatesub'),
+    path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_deletesub/<int:distance_id>/', views.distance_travelled_deletesub, name='distance_travelled_deletesub'),
+    path('api/distance_travelled/', views.DistanceTravelledView.as_view()),
 ]

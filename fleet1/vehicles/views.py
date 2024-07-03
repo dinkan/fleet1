@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget, FleetDemand
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled
 
 from django.db.models import Sum
 
@@ -499,10 +499,106 @@ def fleet_demand_deletesub(request, id):
     fleet_demand.delete()
     return redirect('fleet_demand_list', org_id=org_id)
 
+def distancetravelledlist(request, org_id, inventory_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    warehouseinventory  = get_object_or_404(WarehouseInventory, id=inventory_id)
+    vehicles = vehicle.objects.filter(vehicle_inventory__id=inventory_id)
+    distancetravelled_list = DistanceTravelled.objects.filter(vehicle_id__in=vehicles)
+    template = loader.get_template('distancetravelledlist.html')
+    context = {
+        'organization': organization,
+        'warehouseinventory': warehouseinventory,
+        'distancetravelled_list':distancetravelled_list
+    }
+    return HttpResponse(template.render(context, request))
+
+def distance_travelled_details(request, org_id, inventory_id, distance_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    warehouseinventory  = get_object_or_404(WarehouseInventory, id=inventory_id)
+    distance_travelled = get_object_or_404(DistanceTravelled, id=distance_id)
+
+    consumption_per_km = distance_travelled.fuel_used.consumption_per_km
+    emissions_per_unit_fuel = distance_travelled.fuel_used.fuel.emissions_per_unit_fuel
+    carbon_emission = distance_travelled.distance_travelled * consumption_per_km * emissions_per_unit_fuel
+    
+    template = loader.get_template('distance_travelled_details.html')
+    context = {
+        'organization': organization,
+        'warehouseinventory': warehouseinventory,
+        'distance_travelled': distance_travelled,
+        'carbon_emission': carbon_emission
+    }
+    return HttpResponse(template.render(context, request))
+
+def distance_travelled_create(request, org_id, inventory_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    warehouseinventory  = get_object_or_404(WarehouseInventory, id=inventory_id)
+    vehicle = warehouseinventory.vehicle
+    vehicle_fuels = VehicleFuel.objects.filter(vehicle_id=vehicle)
+
+    template = loader.get_template('distance_travelled_create.html')
+    context = {
+        'organization': organization,
+        'warehouseinventory': warehouseinventory,
+        'vehicle_fuels': vehicle_fuels, 
+    }
+    return HttpResponse(template.render(context, request))
+
+def distance_travelled_createsub(request, org_id, inventory_id):
+    warehouseinventory  = get_object_or_404(WarehouseInventory, id=inventory_id)
+    vehicle = warehouseinventory.vehicle
+
+    date = request.POST["date"]
+    distance_travelled = request.POST["distance_travelled"]
+    fuel_used_id = request.POST["fuel_used"]
+
+    fuel_used = get_object_or_404(VehicleFuel, id=fuel_used_id)
+
+    new_distance_travelled = DistanceTravelled(
+        vehicle_id=vehicle,
+        date=date,
+        distance_travelled=distance_travelled,
+        fuel_used=fuel_used
+    )
+    new_distance_travelled.save()
+
+    return redirect(f'/organization/{org_id}/warehouseinventory/{inventory_id}/distancetravelledlist')
+    
+def distance_travelled_update(request, org_id, inventory_id, distance_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    warehouseinventory = get_object_or_404(WarehouseInventory, id=inventory_id)
+    distance_travelled = get_object_or_404(DistanceTravelled, id=distance_id)
+
+    vehicle_fuels = VehicleFuel.objects.filter(vehicle_id=warehouseinventory.vehicle)
+
+    template = loader.get_template('distance_travelled_update.html')
+    context = {
+        'organization': organization,
+        'warehouseinventory': warehouseinventory,
+        'distance_travelled': distance_travelled,
+        'vehicle_fuels': vehicle_fuels,
+    }
+    return HttpResponse(template.render(context, request))
+
+def distance_travelled_updatesub(request, org_id, inventory_id, distance_id):
+    distance_travelled = get_object_or_404(DistanceTravelled, id=distance_id)
+
+    distance_travelled.date = request.POST["date"]
+    distance_travelled.distance_travelled = request.POST["distance_travelled"]
+    distance_travelled.fuel_used_id = request.POST["fuel_used"]
+
+    distance_travelled.save()
+    return redirect(f'/organization/{org_id}/warehouseinventory/{inventory_id}/distancetravelledlist')
+
+def distance_travelled_deletesub(request, org_id, inventory_id, distance_id):
+    distance_travelled = get_object_or_404(DistanceTravelled, id=distance_id)
+    distance_travelled.delete()
+    return redirect(f'/organization/{org_id}/warehouseinventory/{inventory_id}/distancetravelledlist')
+
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer, DistanceTravelledSerializer
 
   
 class vehicleView(APIView):    
@@ -610,6 +706,20 @@ class FleetDemandView(APIView):
 
     def post(self, request):
         serializer = FleetDemandSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class DistanceTravelledView(APIView):
+    def get(self, request, *args, **kwargs):
+        distances = DistanceTravelled.objects.all()
+        serializer = DistanceTravelledSerializer(distances, many=True)
+        return Response({'status': 'success', 'distances': serializer.data}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = DistanceTravelledSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

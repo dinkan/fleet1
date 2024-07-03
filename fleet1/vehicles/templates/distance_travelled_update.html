@@ -1,0 +1,28 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+Update Distance Travelled for {{ warehouseinventory.vehicle.name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Update Distance Travelled for {{ warehouseinventory.vehicle.name }}</h1>
+  <form action="{% url 'distance_travelled_updatesub' organization.id warehouseinventory.id distance_travelled.id %}" method="post">
+    {% csrf_token %}
+    <input type="date" id="date" name="date" value="{{ distance_travelled.date|date:'Y-m-d' }}" required><br><br>
+    
+    <input type="number" id="distance_travelled" name="distance_travelled" value="{{ distance_travelled.distance_travelled }}" required><br><br>
+    
+    <select id="fuel_used" name="fuel_used" required>
+      <option value="" disabled>Select Fuel Used</option>
+      {% for vehicle_fuel in vehicle_fuels %}
+        <option value="{{ vehicle_fuel.id }}" {% if vehicle_fuel.id == distance_travelled.fuel_used.id %}selected{% endif %}>
+          {{ vehicle_fuel.fuel.fuel_type }} ({{ vehicle_fuel.fuel.year }})
+        </option>
+      {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Save</button>
+  </form>
+  <hr>
+  <p>Back to <a href="{% url 'distancetravelledlist' organization.id warehouseinventory.id %}">Distance Travelled List</a></p>
+{% endblock %}

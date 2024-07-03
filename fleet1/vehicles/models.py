@@ -89,3 +89,12 @@ class FleetDemand(models.Model):
 
     def __str__(self):
         return f"{self.organization.org_name} - {self.year} - {self.demand} km"
+    
+class DistanceTravelled(models.Model):
+    vehicle_id = models.ForeignKey(vehicle, on_delete=models.CASCADE)
+    date = models.DateField()
+    distance_travelled = models.FloatField()
+    fuel_used = models.ForeignKey(VehicleFuel, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.vehicle_id.vehicle_id} - {self.distance_travelled} km on {self.date}"

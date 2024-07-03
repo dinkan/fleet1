@@ -1,0 +1,34 @@
+{% extends "mastertemplate.html" %}
+
+    {% block title %}
+      Distances Travelled by {{warehouseinventory.vehicle.name}}
+    {% endblock %}
+
+    {% block content %}
+      <h1>Distances Travelled by {{warehouseinventory.vehicle.name}} List</h1>
+
+      {% if distancetravelled_list %}
+      <table border="1" style="border-collapse: collapse;">
+        <thead>
+          <th>Vehicle ID</th><th>Date</th><th>Distance Travelled</th><th>Fuel Used</th><th>More</th>
+        </thead>
+        {% for distance in distancetravelled_list %}
+          <tr>
+            <td>{{ distance.vehicle_id.vehicle_id }}</td>
+            <td>{{ distance.date }}</td>
+            <td>{{ distance.distance_travelled }}</td>
+            <td>{{ distance.fuel_used.fuel.fuel_type }} ({{ distance.fuel_used.fuel.year }})</td>
+            <td>
+              <a href="{% url 'distance_travelled_details' organization.id warehouseinventory.id distance.id %}">Details</a> 
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        Please click on the link below to add a new distance travelled<br>
+      {% endif %}
+      
+      <hr>
+      <p><a href="{% url 'distance_travelled_create' organization.id warehouseinventory.id%}">Add a new distance travelled</a></p>
+      <p>Back to <a href="{% url 'warehouseinventory_list' organization.id %}">Warehouse Inventory List</a></p>
+    {% endblock %}

@@ -22,6 +22,7 @@
                 <td>
                     <a href="{% url 'warehouseinventory_update' organization.id item.id %}">Update</a> 
                     | <a href="{% url 'warehouseinventory_deletesub' organization.id item.id %}">Delete</a>
+                    | <a href="{% url 'distancetravelledlist' organization.id item.id %}">Distance Travelled</a>
                 </td>
             </tr>
             {% endfor %}

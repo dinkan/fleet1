@@ -1,0 +1,21 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Distance Travelled by {{warehouseinventory.vehicle.name}} Details
+{% endblock %}
+
+{% block content %}
+  <h1>Details of Distance Travelled by {{warehouseinventory.vehicle.name}} on {{ distance_travelled.fuel_used.fuel.fuel_type }} ({{distance_travelled.fuel_used.fuel.year}}) fuel</h1>
+  
+  <p><strong>Vehicle ID:</strong> {{ distance_travelled.vehicle_id.vehicle_id }}</p>
+  <p><strong>Date:</strong> {{ distance_travelled.date }}</p>
+  <p><strong>Distance Travelled:</strong> {{ distance_travelled.distance_travelled }}</p>
+  <p><strong>Fuel Used:</strong> {{ distance_travelled.fuel_used.fuel.fuel_type }} ({{distance_travelled.fuel_used.fuel.year}})</p>
+  <p><strong>Carbon Emission:</strong> {{ carbon_emission }}</p>
+
+  <a href="{% url 'distance_travelled_update' organization.id warehouseinventory.id distance_travelled.id %}">Update the entry</a></p>
+  <a href="{% url 'distance_travelled_deletesub' organization.id warehouseinventory.id distance_travelled.id %}">Delete this entry</a></p>
+
+  <hr>
+  <p>Back to <a href="{% url 'distancetravelledlist' organization.id warehouseinventory.id %}">Distance Travelled List</a></p>
+{% endblock %}

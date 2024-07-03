@@ -1,0 +1,26 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Create a new Distance Travelled for {{warehouseinventory.vehicle.name}}
+{% endblock %}
+
+{% block content %}
+  <h1>Create a new Distance Travelled for {{warehouseinventory.vehicle.name}}</h1>
+  <form action="{% url 'distance_travelled_createsub' organization.id warehouseinventory.id %}" method="post">
+    {% csrf_token %}
+    <input type="date" id="date" name="date" placeholder="Date" required><br><br>
+    
+    <input type="number" id="distance_travelled" name="distance_travelled" placeholder="Distance Travelled" required><br><br>
+    
+    <select id="fuel_used" name="fuel_used" required>
+      <option value="" disabled selected>Select Fuel Used</option>
+      {% for vehicle_fuel in vehicle_fuels %}
+        <option value="{{ vehicle_fuel.id }}">{{ vehicle_fuel.fuel.fuel_type }} ({{ vehicle_fuel.fuel.year }})</option>
+      {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Save</button>
+  </form>
+  <hr>
+  <p>Back to <a href="{% url 'distancetravelledlist' organization.id warehouseinventory.id %}">Distance Travelled List</a></p>
+{% endblock %}
