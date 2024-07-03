@@ -49,7 +49,7 @@ class Transaction(models.Model):
     details = models.TextField()
     expense = models.FloatField()
     income = models.FloatField(default=0.0)
-    reference_id = models.ForeignKey(WarehouseInventory, on_delete=models.CASCADE)
+    reference_id = models.ForeignKey(WarehouseInventory, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.organization.org_name} - {self.reference_id.warehouse.name} - {self.date.strftime('%Y-%m-%d %H:%M:%S')}"
@@ -91,7 +91,7 @@ class FleetDemand(models.Model):
         return f"{self.organization.org_name} - {self.year} - {self.demand} km"
     
 class DistanceTravelled(models.Model):
-    vehicle_id = models.ForeignKey(vehicle, on_delete=models.CASCADE)
+    vehicle_id = models.ForeignKey(WarehouseInventory, on_delete=models.CASCADE)
     date = models.DateField()
     distance_travelled = models.FloatField()
     fuel_used = models.ForeignKey(VehicleFuel, on_delete=models.CASCADE)

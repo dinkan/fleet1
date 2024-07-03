@@ -502,8 +502,7 @@ def fleet_demand_deletesub(request, id):
 def distancetravelledlist(request, org_id, inventory_id):
     organization = get_object_or_404(Organization, id=org_id)
     warehouseinventory  = get_object_or_404(WarehouseInventory, id=inventory_id)
-    vehicles = vehicle.objects.filter(vehicle_inventory__id=inventory_id)
-    distancetravelled_list = DistanceTravelled.objects.filter(vehicle_id__in=vehicles)
+    distancetravelled_list = DistanceTravelled.objects.filter(vehicle_id=warehouseinventory)
     template = loader.get_template('distancetravelledlist.html')
     context = {
         'organization': organization,
@@ -546,16 +545,16 @@ def distance_travelled_create(request, org_id, inventory_id):
 
 def distance_travelled_createsub(request, org_id, inventory_id):
     warehouseinventory  = get_object_or_404(WarehouseInventory, id=inventory_id)
-    vehicle = warehouseinventory.vehicle
 
     date = request.POST["date"]
     distance_travelled = request.POST["distance_travelled"]
     fuel_used_id = request.POST["fuel_used"]
 
+    distance_travelled = float(distance_travelled)
     fuel_used = get_object_or_404(VehicleFuel, id=fuel_used_id)
 
     new_distance_travelled = DistanceTravelled(
-        vehicle_id=vehicle,
+        vehicle_id=warehouseinventory,
         date=date,
         distance_travelled=distance_travelled,
         fuel_used=fuel_used

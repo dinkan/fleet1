@@ -14,7 +14,7 @@
         </thead>
         {% for distance in distancetravelled_list %}
           <tr>
-            <td>{{ distance.vehicle_id.vehicle_id }}</td>
+            <td>{{ distance.vehicle_id.vehicle.vehicle_id }}</td>
             <td>{{ distance.date }}</td>
             <td>{{ distance.distance_travelled }}</td>
             <td>{{ distance.fuel_used.fuel.fuel_type }} ({{ distance.fuel_used.fuel.year }})</td>
