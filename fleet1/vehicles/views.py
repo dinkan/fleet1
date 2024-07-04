@@ -17,6 +17,8 @@ from django.db.models import Sum
 
 from django.core.exceptions import ValidationError
 
+from django.utils.dateparse import parse_datetime
+
 def vehicles(request):
   vehiclelist = vehicle.objects.all().values()
   template = loader.get_template('vehicleslist.html')
@@ -594,10 +596,88 @@ def distance_travelled_deletesub(request, org_id, inventory_id, distance_id):
     distance_travelled.delete()
     return redirect(f'/organization/{org_id}/warehouseinventory/{inventory_id}/distancetravelledlist')
 
+def transactionslist(request, id):
+    organization = get_object_or_404(Organization, id=id)
+    transactions_list = Transaction.objects.filter(organization=organization)
+    template = loader.get_template('transactionslist.html')
+    context = {
+        'organization': organization,
+        'transactions_list': transactions_list
+    }
+    return HttpResponse(template.render(context, request))
+
+def transactions_create(request, id):
+    organization = get_object_or_404(Organization, id=id)
+    inventory_items = WarehouseInventory.objects.filter(organization=organization)
+    template = loader.get_template('transactions_create.html')
+    context = {
+        'organization': organization,
+        'inventory_items': inventory_items,
+    }
+    return HttpResponse(template.render(context, request))
+
+def transactions_createsub(request, id):
+    organization = get_object_or_404(Organization, id=id)
+    date_str = request.POST["date"]
+    date = parse_datetime(date_str)
+    details = request.POST["details"]
+    expense = float(request.POST["expense"])
+    income = float(request.POST["income"])
+    reference_id = request.POST.get("reference_id")
+    
+    reference = None
+    if reference_id and reference_id != "None":
+        reference = get_object_or_404(WarehouseInventory, id=reference_id)
+    
+    transaction = Transaction(
+        organization=organization,
+        date=date,
+        details=details,
+        expense=expense,
+        income=income,
+        reference_id=reference
+    )
+    transaction.save()
+    return redirect(f'/org_details/{id}/transactionslist')
+
+def transactions_update(request, id, transaction_id):
+    organization = get_object_or_404(Organization, id=id)
+    transaction = get_object_or_404(Transaction, id=transaction_id)
+    inventory_items = WarehouseInventory.objects.filter(organization=organization)
+    template = loader.get_template('transactions_update.html')
+    context = {
+        'organization': organization,
+        'transaction': transaction,
+        'inventory_items': inventory_items,
+    }
+    return HttpResponse(template.render(context, request))
+
+def transactions_updatesub(request, id, transaction_id):
+    transaction = get_object_or_404(Transaction, id=transaction_id)
+    transaction.date = request.POST["date"]
+    transaction.details = request.POST["details"]
+    transaction.expense = float(request.POST["expense"])
+    transaction.income = float(request.POST["income"])
+    reference_id = request.POST.get("reference_id")
+    
+    if reference_id:
+        transaction.reference_id = get_object_or_404(WarehouseInventory, id=reference_id)
+    else:
+        transaction.reference_id = None
+    
+    transaction.save()
+    return redirect(f'/org_details/{id}/transactionslist')
+
+def transactions_deletesub(request, id, transaction_id):
+    transaction = get_object_or_404(Transaction, id=transaction_id)
+    transaction.delete()
+    return redirect(f'/org_details/{id}/transactionslist')
+
+
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer, DistanceTravelledSerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer, DistanceTravelledSerializer, TransactionSerializer
 
   
 class vehicleView(APIView):    
@@ -719,6 +799,20 @@ class DistanceTravelledView(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = DistanceTravelledSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class TransactionView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = Transaction.objects.all()
+        serializer = TransactionSerializer(result, many=True)
+        return Response({'status': 'success', 'transactions': serializer.data}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = TransactionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

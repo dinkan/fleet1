@@ -31,7 +31,7 @@
 
   <a href="/org_update/{{ organization.id }}">Update the entry</a></p>
   <a href="/org_deletesub/{{ organization.id }}">Delete this entry</a></p>
-
+  <p><a href="{% url 'transactionslist' organization.id %}">View Transactions</a></p>
   <hr>
   <p>Back to <a href="/organization">Organization List</a></p>
 {% endblock %}

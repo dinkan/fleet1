@@ -52,7 +52,10 @@ class Transaction(models.Model):
     reference_id = models.ForeignKey(WarehouseInventory, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.organization.org_name} - {self.reference_id.warehouse.name} - {self.date.strftime('%Y-%m-%d %H:%M:%S')}"
+        if self.reference_id:
+            return f"{self.organization.org_name} - {self.reference_id.warehouse.name} - {self.date.strftime('%Y-%m-%d %H:%M:%S')}"
+        else:
+            return f"{self.organization.org_name} - {self.date.strftime('%Y-%m-%d %H:%M:%S')}"
     
 class Fuel(models.Model):
     fuel_type = models.CharField(max_length=50)
@@ -97,4 +100,4 @@ class DistanceTravelled(models.Model):
     fuel_used = models.ForeignKey(VehicleFuel, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.vehicle_id.vehicle_id} - {self.distance_travelled} km on {self.date}"
+        return f"{self.vehicle_id.vehicle.vehicle_id} - {self.distance_travelled} km on {self.date}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers  
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, Transaction
 
 class vehicleSerializer(serializers.ModelSerializer):  
     name = serializers.CharField(max_length=200, required=True)  
@@ -161,5 +161,23 @@ class DistanceTravelledSerializer(serializers.ModelSerializer):
         instance.date = validated_data.get('date', instance.date)
         instance.distance_travelled = validated_data.get('distance_travelled', instance.distance_travelled)
         instance.fuel_used = validated_data.get('fuel_used', instance.fuel_used)
+        instance.save()
+        return instance
+    
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return Transaction.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.organization = validated_data.get('organization', instance.organization)
+        instance.date = validated_data.get('date', instance.date)
+        instance.details = validated_data.get('details', instance.details)
+        instance.expense = validated_data.get('expense', instance.expense)
+        instance.income = validated_data.get('income', instance.income)
+        instance.reference_id = validated_data.get('reference_id', instance.reference_id)
         instance.save()
         return instance

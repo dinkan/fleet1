@@ -71,4 +71,11 @@ urlpatterns = [
     path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_updatesub/<int:distance_id>/', views.distance_travelled_updatesub, name='distance_travelled_updatesub'),
     path('organization/<int:org_id>/warehouseinventory/<int:inventory_id>/distance_travelled_deletesub/<int:distance_id>/', views.distance_travelled_deletesub, name='distance_travelled_deletesub'),
     path('api/distance_travelled/', views.DistanceTravelledView.as_view()),
+    path('org_details/<int:id>/transactionslist/', views.transactionslist, name='transactionslist'),
+    path('org_details/<int:id>/transactions_create/', views.transactions_create, name='transactions_create'),
+    path('org_details/<int:id>/transactions_createsub/', views.transactions_createsub, name='transactions_createsub'),
+    path('org_details/<int:id>/transactions_update/<int:transaction_id>', views.transactions_update, name='transactions_update'),
+    path('org_details/<int:id>/transactions_updatesub/<int:transaction_id>', views.transactions_updatesub, name='transactions_updatesub'),
+    path('org_details/<int:id>/transactions_deletesub/<int:transaction_id>', views.transactions_deletesub, name='transactions_deletesub'),
+    path('api/transactions/', views.TransactionView.as_view()),
 ]

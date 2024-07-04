@@ -1,0 +1,36 @@
+{% extends "mastertemplate.html" %}
+
+    {% block title %}
+      Transactions for {{organization.org_name}}
+    {% endblock %}
+
+    {% block content %}
+      <h1>Transactions for {{organization.org_name}} List</h1>
+
+      {% if transactions_list %}
+      <table border="1" style="border-collapse: collapse;">
+        <thead>
+          <th>Date</th><th>Details</th><th>Expense</th><th>Income</th><th>Reference id</th><th>More</th>
+        </thead>
+        {% for transaction in transactions_list %}
+          <tr>
+            <td>{{ transaction.date|date:"Y-m-d H:i:s" }}</td>
+            <td>{{ transaction.details }}</td>
+            <td>{{ transaction.expense }}</td>
+            <td>{{ transaction.income }}</td>
+            <td>{{ transaction.reference_id }}</td>
+            <td>
+              <a href="{% url 'transactions_update' organization.id transaction.id %}">Update</a> 
+              | <a href="{% url 'transactions_deletesub' organization.id transaction.id %}">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        Please click on the link below to add a new transaction<br>
+      {% endif %}
+      
+      <hr>
+      <p><a href="{% url 'transactions_create' organization.id %}">Add a new Transaction</a></p>
+      <p>Back to <a href="{% url 'org_details' organization.id %}">Organization Details</a></p>
+    {% endblock %}

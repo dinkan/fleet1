@@ -1,0 +1,33 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Create a new Transaction for {{organization.org_name}}
+{% endblock %}
+
+{% block content %}
+  <h1>Create a new Transaction for {{organization.org_name}}</h1>
+  <form action="{% url 'transactions_createsub' organization.id %}" method="post">
+    {% csrf_token %}
+
+    <input type="text" value="Transaction Date" readonly style="border:none; color:grey; width: 102px;"><br>
+    <input type="datetime-local" id="date" name="date"><br><br>
+    
+    <textarea id="details" name="details" placeholder="Transaction Details"></textarea><br><br>
+    
+    <input type="number" step="0.01" id="expense" name="expense" placeholder="Expense"><br><br>
+    
+    <input type="number" step="0.01" id="income" name="income" placeholder="Income"><br><br>
+    
+    <select id="reference_id" name="reference_id">
+      <option value="" disabled selected>Select Reference id</option>
+      <option value="">None</option>
+      {% for item in inventory_items %}
+        <option value="{{ item.id }}">{{ item.warehouse.name}} - {{ item.vehicle.name }} ({{ item.count }})</option>
+      {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Save</button>
+  </form>
+  <hr>
+  <p>Back to <a href="{% url 'transactionslist' organization.id %}">Transactions List</a></p>
+{% endblock %}
