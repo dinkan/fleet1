@@ -1,0 +1,24 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Update Cost Profile for {{organization.org_name}}
+{% endblock %}
+
+{% block content %}
+  <h1>Update Cost Profile for {{organization.org_name}}</h1>
+  <form action="{% url 'costprofile_updatesub' organization.id costprofile.id %}" method="post">
+    {% csrf_token %}
+
+    <input type="number" id="end_of_year" name="end_of_year" value="{{costprofile.end_of_year}}"><br><br>
+    
+    <input type="number" id="resale_value_percent" name="resale_value_percent" value="{{costprofile.resale_value_percent}}"><br><br>
+    
+    <input type="number" id="insurance_cost_percent" name="insurance_cost_percent" value="{{costprofile.insurance_cost_percent}}"><br><br>
+    
+    <input type="number" id="maintenance_cost_percent" name="maintenance_cost_percent" value="{{costprofile.maintenance_cost_percent}}"><br><br>
+
+    <button type="submit">Save</button>
+  </form>
+  <hr>
+  <p>Back to <a href="{% url 'costprofilelist' organization.id %}">Cost Profile List</a></p>
+{% endblock %}

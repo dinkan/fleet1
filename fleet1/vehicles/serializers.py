@@ -1,5 +1,5 @@
 from rest_framework import serializers  
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, Transaction
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, Transaction, CostProfile
 
 class vehicleSerializer(serializers.ModelSerializer):  
     name = serializers.CharField(max_length=200, required=True)  
@@ -179,5 +179,22 @@ class TransactionSerializer(serializers.ModelSerializer):
         instance.expense = validated_data.get('expense', instance.expense)
         instance.income = validated_data.get('income', instance.income)
         instance.reference_id = validated_data.get('reference_id', instance.reference_id)
+        instance.save()
+        return instance
+    
+class CostProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CostProfile
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return CostProfile.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.organization = validated_data.get('organization', instance.organization)
+        instance.end_of_year = validated_data.get('end_of_year', instance.end_of_year)
+        instance.resale_value_percent = validated_data.get('resale_value_percent', instance.resale_value_percent)
+        instance.insurance_cost_percent = validated_data.get('insurance_cost_percent', instance.insurance_cost_percent)
+        instance.maintenance_cost_percent = validated_data.get('maintenance_cost_percent', instance.maintenance_cost_percent)
         instance.save()
         return instance

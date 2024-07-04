@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, CostProfile
 
 from django.db.models import Sum
 
@@ -673,11 +673,89 @@ def transactions_deletesub(request, id, transaction_id):
     transaction.delete()
     return redirect(f'/org_details/{id}/transactionslist')
 
+def costprofilelist(request, id):
+    organization = get_object_or_404(Organization, id=id)
+    costprofile_list = CostProfile.objects.filter(organization=organization)
+    template = loader.get_template('costprofilelist.html')
+    context = {
+        'organization': organization,
+        'costprofile_list': costprofile_list
+    }
+    return HttpResponse(template.render(context, request))
+
+def costprofile_create(request, id):
+    organization = get_object_or_404(Organization, id=id)
+    template = loader.get_template('costprofile_create.html')
+    context = {
+        'organization': organization,
+    }
+    return HttpResponse(template.render(context, request))
+
+def costprofile_createsub(request, id):
+    organization = get_object_or_404(Organization, id=id)
+    end_of_year = request.POST["end_of_year"]
+    resale_value_percent = int(request.POST["resale_value_percent"])
+    insurance_cost_percent = int(request.POST["insurance_cost_percent"])
+    maintenance_cost_percent = int(request.POST["maintenance_cost_percent"])
+
+    if resale_value_percent < 0 or resale_value_percent > 100:
+        raise ValidationError("Resale Value must be a % between 0 and 100")
+    if insurance_cost_percent < 0 or insurance_cost_percent > 100:
+        raise ValidationError("Insurance Cost must be a % between 0 and 100")
+    if maintenance_cost_percent < 0 or maintenance_cost_percent > 100:
+        raise ValidationError("Maintenance Cost must be a % between 0 and 100")
+    
+    costprofile = CostProfile(
+        organization=organization,
+        end_of_year=end_of_year,
+        resale_value_percent=resale_value_percent,
+        insurance_cost_percent=insurance_cost_percent,
+        maintenance_cost_percent=maintenance_cost_percent
+    )
+    costprofile.save()
+    return redirect(f'/org_details/{id}/costprofilelist')
+
+def costprofile_update(request, id, costprofile_id):
+    organization = get_object_or_404(Organization, id=id)
+    costprofile = get_object_or_404(CostProfile, id=costprofile_id)
+    template = loader.get_template('costprofile_update.html')
+    context = {
+        'organization': organization,
+        'costprofile': costprofile,
+    }
+    return HttpResponse(template.render(context, request))
+
+def costprofile_updatesub(request, id, costprofile_id):
+    costprofile = get_object_or_404(CostProfile, id=costprofile_id)
+    costprofile.end_of_year = request.POST["end_of_year"]
+    resale_value_percent = int(request.POST["resale_value_percent"])
+    insurance_cost_percent = int(request.POST["insurance_cost_percent"])
+    maintenance_cost_percent = int(request.POST["maintenance_cost_percent"])
+
+    if resale_value_percent < 0 or resale_value_percent > 100:
+        raise ValidationError("Resale Value must be a % between 0 and 100")
+    if insurance_cost_percent < 0 or insurance_cost_percent > 100:
+        raise ValidationError("Insurance Cost must be a % between 0 and 100")
+    if maintenance_cost_percent < 0 or maintenance_cost_percent > 100:
+        raise ValidationError("Maintenance Cost must be a % between 0 and 100")
+    
+    costprofile.resale_value_percent = resale_value_percent
+    costprofile.insurance_cost_percent = insurance_cost_percent
+    costprofile.maintenance_cost_percent = maintenance_cost_percent
+
+    costprofile.save()
+    return redirect(f'/org_details/{id}/costprofilelist')
+
+def costprofile_deletesub(request, id, costprofile_id):
+    costprofile = get_object_or_404(CostProfile, id=costprofile_id)
+    costprofile.delete()
+    return redirect(f'/org_details/{id}/costprofilelist')
+
 
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer, DistanceTravelledSerializer, TransactionSerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer, DistanceTravelledSerializer, TransactionSerializer, CostProfileSerializer
 
   
 class vehicleView(APIView):    
@@ -813,6 +891,20 @@ class TransactionView(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = TransactionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class CostProfileView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = CostProfile.objects.all()
+        serializer = CostProfileSerializer(result, many=True)
+        return Response({'status': 'success', 'costprofiles': serializer.data}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = CostProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

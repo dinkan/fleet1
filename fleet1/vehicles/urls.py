@@ -78,4 +78,11 @@ urlpatterns = [
     path('org_details/<int:id>/transactions_updatesub/<int:transaction_id>', views.transactions_updatesub, name='transactions_updatesub'),
     path('org_details/<int:id>/transactions_deletesub/<int:transaction_id>', views.transactions_deletesub, name='transactions_deletesub'),
     path('api/transactions/', views.TransactionView.as_view()),
+    path('org_details/<int:id>/costprofilelist/', views.costprofilelist, name='costprofilelist'),
+    path('org_details/<int:id>/costprofile_create/', views.costprofile_create, name='costprofile_create'),
+    path('org_details/<int:id>/costprofile_createsub/', views.costprofile_createsub, name='costprofile_createsub'),
+    path('org_details/<int:id>/costprofile_update/<int:costprofile_id>', views.costprofile_update, name='costprofile_update'),
+    path('org_details/<int:id>/costprofile_updatesub/<int:costprofile_id>', views.costprofile_updatesub, name='costprofile_updatesub'),
+    path('org_details/<int:id>/costprofile_deletesub/<int:costprofile_id>', views.costprofile_deletesub, name='costprofile_deletesub'),
+    path('api/costprofiles/', views.CostProfileView.as_view()),
 ]

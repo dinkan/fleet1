@@ -9,7 +9,6 @@
   <form action="{% url 'transactions_updatesub' organization.id transaction.id %}" method="post">
     {% csrf_token %}
 
-    {% comment %} <input type="text" value="Transaction Date" readonly style="border:none; color:grey; width: 102px;"><br> {% endcomment %}
     <input type="datetime-local" id="date" name="date" value="{{transaction.date|date:'Y-m-d\TH:i'}}"><br><br>
     
     <textarea id="details" name="details">{{ transaction.details }}</textarea><br><br>

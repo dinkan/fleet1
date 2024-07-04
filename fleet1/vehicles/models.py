@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 
@@ -101,3 +102,19 @@ class DistanceTravelled(models.Model):
 
     def __str__(self):
         return f"{self.vehicle_id.vehicle.vehicle_id} - {self.distance_travelled} km on {self.date}"
+
+class CostProfile(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    end_of_year = models.IntegerField()
+    resale_value_percent = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    insurance_cost_percent = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    maintenance_cost_percent = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+
+    def __str__(self):
+        return f"{self.organization.org_name} - End of Year {self.end_of_year} (id {self.id})"

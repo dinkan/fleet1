@@ -1,0 +1,35 @@
+{% extends "mastertemplate.html" %}
+
+    {% block title %}
+      Cost Profile for {{organization.org_name}}
+    {% endblock %}
+
+    {% block content %}
+      <h1>Cost Profile for {{organization.org_name}} List</h1>
+
+      {% if costprofile_list %}
+      <table border="1" style="border-collapse: collapse;">
+        <thead>
+          <th>End of Year</th><th>Resale Value %</th><th>Insurance Cost %</th><th>Maintenance Cost %</th><th>More</th>
+        </thead>
+        {% for item in costprofile_list %}
+          <tr>
+            <td>{{ item.end_of_year }}</td>
+            <td>{{ item.resale_value_percent }}</td>
+            <td>{{ item.insurance_cost_percent }}</td>
+            <td>{{ item.maintenance_cost_percent }}</td>
+            <td>
+              <a href="{% url 'costprofile_update' organization.id item.id %}">Update</a> 
+              | <a href="{% url 'costprofile_deletesub' organization.id item.id %}">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        Please click on the link below to add a new transaction<br>
+      {% endif %}
+      
+      <hr>
+      <p><a href="{% url 'costprofile_create' organization.id %}">Add a new Cost Profile</a></p>
+      <p>Back to <a href="{% url 'org_details' organization.id %}">Organization Details</a></p>
+    {% endblock %}
