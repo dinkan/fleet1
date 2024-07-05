@@ -1,5 +1,5 @@
 from rest_framework import serializers  
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, Transaction, CostProfile
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, Transaction, CostProfile, Depot, VehiclesList
 
 class vehicleSerializer(serializers.ModelSerializer):  
     name = serializers.CharField(max_length=200, required=True)  
@@ -196,5 +196,51 @@ class CostProfileSerializer(serializers.ModelSerializer):
         instance.resale_value_percent = validated_data.get('resale_value_percent', instance.resale_value_percent)
         instance.insurance_cost_percent = validated_data.get('insurance_cost_percent', instance.insurance_cost_percent)
         instance.maintenance_cost_percent = validated_data.get('maintenance_cost_percent', instance.maintenance_cost_percent)
+        instance.save()
+        return instance
+    
+class DepotSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=255, required=True)
+    address = serializers.CharField(max_length=255, required=True)
+    parking_capacity = serializers.IntegerField(required=True)
+    charging_points = serializers.IntegerField(required=True)
+
+    class Meta:
+        model = Depot
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return Depot.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.address = validated_data.get('address', instance.address)
+        instance.parking_capacity = validated_data.get('parking_capacity', instance.parking_capacity)
+        instance.charging_points = validated_data.get('charging_points', instance.charging_points)
+        instance.save()
+        return instance
+    
+class VehiclesListSerializer(serializers.ModelSerializer):
+    vin_number = serializers.CharField(max_length=255, required=True)
+    age = serializers.IntegerField(required=True)
+    status = serializers.CharField(max_length=255, required=True)
+    maintenance_cost = serializers.FloatField(required=True)
+    insurance_cost = serializers.FloatField(required=True)
+    resale_value = serializers.FloatField(required=True)
+
+    class Meta:
+        model = VehiclesList
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return VehiclesList.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.vin_number = validated_data.get('vin_number', instance.vin_number)
+        instance.age = validated_data.get('age', instance.age)
+        instance.status = validated_data.get('status', instance.status)
+        instance.maintenance_cost = validated_data.get('maintenance_cost', instance.maintenance_cost)
+        instance.insurance_cost = validated_data.get('insurance_cost', instance.insurance_cost)
+        instance.resale_value = validated_data.get('resale_value', instance.resale_value)
         instance.save()
         return instance

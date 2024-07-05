@@ -1,0 +1,42 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of Vehicles for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Vehicles List for {{ organization.org_name }}</h1>
+  
+  {% if vehicles_list %}
+  <table border="1" style="border-collapse: collapse;">
+    <thead>
+        <th>Warehouse</th><th>Vehicle</th><th>Date of Purchase</th><th>Cost of Purchase</th><th>VIN Number</th><th>Age</th><th>Status</th><th>Maintenance Cost</th><th>Insurance Cost</th><th>Resale Value</th><th>Depot</th><th>Actions</th>
+    </thead>
+    {% for vehicle in vehicles_list %}
+      <tr>
+        <td>{{ vehicle.warehouse.name }}</td>
+        <td>{{ vehicle.vehicle.name }}</td>
+        <td>{{ vehicle.date_of_purchase }}</td>
+        <td>{{ vehicle.cost_of_purchase }}</td>
+        <td>{{ vehicle.vin_number }}</td>
+        <td>{{ vehicle.age }}</td>
+        <td>{{ vehicle.status }}</td>
+        <td>{{ vehicle.maintenance_cost }}</td>
+        <td>{{ vehicle.insurance_cost }}</td>
+        <td>{{ vehicle.resale_value }}</td>
+        <td>{{ vehicle.depot.name }}</td>
+        <td>
+          <a href="{% url 'vehicles_list_update' organization.id vehicle.id %}">Update</a> 
+          | <a href="{% url 'vehicles_list_deletesub' organization.id vehicle.id %}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    No vehicles found. Please add a new vehicle.
+  {% endif %}
+  
+  <hr>
+  <a href="{% url 'vehicles_list_create' organization.id %}">Add a new vehicle list entry</a>
+  <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
+{% endblock %}

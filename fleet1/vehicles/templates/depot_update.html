@@ -1,0 +1,20 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Update Depot for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Update Depot for {{ organization.org_name }}</h1>
+  <form action="{% url 'depot_updatesub' organization.id depot.id %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="name" id="name" value="{{ depot.name }}">
+    <input type="text" name="address" id="address" value="{{ depot.address }}">
+    <input type="number" name="parking_capacity" id="parking_capacity" value="{{ depot.parking_capacity }}">
+    <input type="number" name="charging_points" id="charging_points" value="{{ depot.charging_points }}">
+    <input type="submit" value="Update">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'depots' organization.id %}">Depots List</a></p>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Update Vehicle List entry for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Update Vehicle List entry for {{ organization.org_name }}</h1>
+  <form action="{% url 'vehicles_list_updatesub' organization.id vehicles_list.id %}" method="post">
+    {% csrf_token %}
+    <select name="warehouse_id">
+      {% for warehouse in warehouses %}
+        <option value="{{ warehouse.id }}" {% if vehicles_list.warehouse.id == warehouse.id %}selected{% endif %}>{{ warehouse.name }}</option>
+      {% endfor %}
+    </select><br><br>
+    <select name="vehicle_id">
+      {% for v in vehicles %}
+        <option value="{{ v.id }}" {% if vehicles_list.vehicle.id == v.id %}selected{% endif %}>{{ v.name }}</option>
+      {% endfor %}
+    </select><br><br>
+    <input type="date" name="date_of_purchase" id="date_of_purchase" value="{{ vehicles_list.date_of_purchase|date:'Y-m-d' }}"><br><br>
+    <input type="text" name="cost_of_purchase" id="cost_of_purchase" value="{{ vehicles_list.cost_of_purchase }}"><br><br>
+    <input type="text" name="vin_number" id="vin_number" value="{{ vehicles_list.vin_number }}"><br><br>
+    <input type="number" name="age" id="age" value="{{ vehicles_list.age }}"><br><br>
+    <input type="text" name="status" id="status" value="{{ vehicles_list.status }}"><br><br>
+    <input type="number" name="maintenance_cost" id="maintenance_cost" value="{{ vehicles_list.maintenance_cost }}"><br><br>
+    <input type="number" name="insurance_cost" id="insurance_cost" value="{{ vehicles_list.insurance_cost }}"><br><br>
+    <input type="number" name="resale_value" id="resale_value" value="{{ vehicles_list.resale_value }}"><br><br>
+    <select name="depot_id">
+      {% for depot in depots %}
+        <option value="{{ depot.id }}" {% if vehicles_list.depot.id == depot.id %}selected{% endif %}>{{ depot.name }}</option>
+      {% endfor %}
+    </select><br><br>
+    <input type="submit" value="Update">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'vehicles_list' organization.id %}">Vehicles List</a></p>
+{% endblock %}

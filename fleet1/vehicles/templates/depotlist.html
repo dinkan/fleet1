@@ -1,0 +1,35 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  List of Depots for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Depots for {{ organization.org_name }}</h1>
+  
+  {% if depot_list %}
+  <table border="1" style="border-collapse: collapse;">
+    <thead>
+      <th>Name</th><th>Address</th><th>Parking Capacity</th><th>Charging Points</th><th>Actions</th>
+    </thead>
+    {% for depot in depot_list %}
+      <tr>
+        <td>{{ depot.name }}</td>
+        <td>{{ depot.address }}</td>
+        <td>{{ depot.parking_capacity }}</td>
+        <td>{{ depot.charging_points }}</td>
+        <td>
+          <a href="{% url 'depot_update' organization.id depot.id %}">Update</a> 
+          | <a href="{% url 'depot_deletesub' organization.id depot.id %}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    No depots found. Please add a new depot.
+  {% endif %}
+  
+  <hr>
+  <a href="{% url 'depot_create' organization.id %}">Add a new depot</a>
+  <p>Back to <a href="{% url 'organization' %}">Organization List</a></p>
+{% endblock %}

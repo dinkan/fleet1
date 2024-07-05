@@ -1,0 +1,40 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Add a new Vehicle List entry for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Create a new Vehicle List entry for {{ organization.org_name }}</h1>
+  <form action="{% url 'vehicles_list_createsub' organization.id %}" method="post">
+    {% csrf_token %}
+    <select name="warehouse_id">
+      {% for warehouse in warehouses %}
+        <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+      {% endfor %}
+    </select><br><br>
+    <select name="vehicle_id">
+      {% for v in vehicles %}
+        <option value="{{ v.id }}">{{ v.name }}</option>
+      {% endfor %}
+    </select><br><br>
+    <input type="text" value="Date of Purchase" readonly style="border:none; color:grey; width: 102px;"><br>
+    <input type="date" name="date_of_purchase" id="date_of_purchase"><br><br>
+    <input type="text" name="cost_of_purchase" id="cost_of_purchase" placeholder="Cost of Purchase"><br><br>
+    <input type="text" name="vin_number" id="vin_number" placeholder="VIN Number"><br><br>
+    <input type="number" name="age" id="age" placeholder="Age"><br><br>
+    <input type="text" name="status" id="status" placeholder="Status"><br><br>
+    <input type="number" name="maintenance_cost" id="maintenance_cost" placeholder="Maintenance Cost"><br><br>
+    <input type="number" name="insurance_cost" id="insurance_cost" placeholder="Insurance Cost"><br><br>
+    <input type="number" name="resale_value" id="resale_value" placeholder="Resale Value"><br><br>
+    <select name="depot_id">
+      {% for depot in depots %}
+        <option value="{{ depot.id }}">{{ depot.name }}</option>
+      {% endfor %}
+    </select><br><br>
+    <input type="submit" value="Create">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'vehicles_list' organization.id %}">Vehicles List</a></p>
+{% endblock %}

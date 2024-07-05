@@ -1,0 +1,20 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  Add a new Depot for {{ organization.org_name }}
+{% endblock %}
+
+{% block content %}
+  <h1>Create a new Depot for {{ organization.org_name }}</h1>
+  <form action="{% url 'depot_createsub' organization.id %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="name" id="name" placeholder="Depot Name">
+    <input type="text" name="address" id="address" placeholder="Depot Address">
+    <input type="number" name="parking_capacity" id="parking_capacity" placeholder="Parking Capacity">
+    <input type="number" name="charging_points" id="charging_points" placeholder="Charging Points">
+    <input type="submit" value="Create">
+  </form>
+
+  <hr>
+  <p>Back to <a href="{% url 'depots' organization.id %}">Depots List</a></p>
+{% endblock %}

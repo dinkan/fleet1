@@ -11,7 +11,7 @@ def welcome(request):
 
 from django.template import loader
 
-from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, CostProfile
+from .models import vehicle, Organization, ParkingLot, WarehouseInventory, Transaction, Fuel, VehicleFuel, EmissionTarget, FleetDemand, DistanceTravelled, CostProfile, Depot, VehiclesList
 
 from django.db.models import Sum
 
@@ -751,11 +751,159 @@ def costprofile_deletesub(request, id, costprofile_id):
     costprofile.delete()
     return redirect(f'/org_details/{id}/costprofilelist')
 
+def depots(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    depot_list = organization.depots.all()
+    template = loader.get_template('depotlist.html')
+    context = {
+        'organization': organization,
+        'depot_list': depot_list,
+    }
+    return HttpResponse(template.render(context, request))
+
+def depot_create(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    template = loader.get_template('depot_create.html')
+    context = {'organization': organization}
+    return HttpResponse(template.render(context, request))
+
+def depot_createsub(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    name = request.POST["name"]
+    address = request.POST["address"]
+    parking_capacity = request.POST["parking_capacity"]
+    charging_points = request.POST["charging_points"]
+    depot = Depot(
+        organization=organization,
+        name=name,
+        address=address,
+        parking_capacity=parking_capacity,
+        charging_points=charging_points
+    )
+    depot.save()
+    return redirect(f'/organization/{org_id}/depots')
+
+def depot_update(request, org_id, dp_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    depot = get_object_or_404(Depot, id=dp_id)
+    template = loader.get_template('depot_update.html')
+    context = {
+        'organization': organization,
+        'depot': depot,
+    }
+    return HttpResponse(template.render(context, request))
+
+def depot_updatesub(request, org_id, dp_id):
+    depot = get_object_or_404(Depot, id=dp_id)
+    depot.name = request.POST["name"]
+    depot.address = request.POST["address"]
+    depot.parking_capacity = request.POST["parking_capacity"]
+    depot.charging_points = request.POST["charging_points"]
+    depot.save()
+    return redirect(f'/organization/{org_id}/depots')
+
+def depot_deletesub(request, org_id, dp_id):
+    depot = get_object_or_404(Depot, id=dp_id)
+    depot.delete()
+    return redirect(f'/organization/{org_id}/depots')
+
+def vehicles_list(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    vehicles_list = organization.vehicles_list.all()
+    template = loader.get_template('vehicles_list.html')
+    context = {
+        'organization': organization,
+        'vehicles_list': vehicles_list,
+    }
+    return HttpResponse(template.render(context, request))
+
+def vehicles_list_create(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    depots = organization.depots.all()
+    warehouses = organization.parkinglots.all()
+    vehicles = vehicle.objects.all()
+    template = loader.get_template('vehicles_list_create.html')
+    context = {
+        'organization': organization,
+        'depots': depots,
+        'warehouses': warehouses,
+        'vehicles': vehicles,
+    }
+    return HttpResponse(template.render(context, request))
+
+def vehicles_list_createsub(request, org_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    depot = get_object_or_404(Depot, id=request.POST["depot_id"])
+    warehouse = get_object_or_404(ParkingLot, id=request.POST["warehouse_id"])
+    vehicle_instance = get_object_or_404(vehicle, id=request.POST["vehicle_id"])
+    date_of_purchase = request.POST["date_of_purchase"]
+    cost_of_purchase = request.POST["cost_of_purchase"]
+    vin_number = request.POST["vin_number"]
+    age = request.POST["age"]
+    status = request.POST["status"]
+    maintenance_cost = request.POST["maintenance_cost"]
+    insurance_cost = request.POST["insurance_cost"]
+    resale_value = request.POST["resale_value"]
+    
+    vehicles_list = VehiclesList(
+        organization=organization,
+        depot=depot,
+        warehouse=warehouse,
+        vehicle=vehicle_instance,
+        date_of_purchase=date_of_purchase,
+        cost_of_purchase=cost_of_purchase,
+        vin_number=vin_number,
+        age=age,
+        status=status,
+        maintenance_cost=maintenance_cost,
+        insurance_cost=insurance_cost,
+        resale_value=resale_value
+    )
+    vehicles_list.save()
+    return redirect(f'/organization/{org_id}/vehicles_list')
+
+def vehicles_list_update(request, org_id, vl_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    vehicles_list = get_object_or_404(VehiclesList, id=vl_id)
+    depots = organization.depots.all()
+    warehouses = organization.parkinglots.all()
+    vehicles = vehicle.objects.all()
+    template = loader.get_template('vehicles_list_update.html')
+    context = {
+        'organization': organization,
+        'vehicles_list': vehicles_list,
+        'depots': depots,
+        'warehouses': warehouses,
+        'vehicles': vehicles,
+    }
+    return HttpResponse(template.render(context, request))
+
+def vehicles_list_updatesub(request, org_id, vl_id):
+    vehicles_list = get_object_or_404(VehiclesList, id=vl_id)
+    vehicles_list.depot = get_object_or_404(Depot, id=request.POST["depot_id"])
+    vehicles_list.warehouse = get_object_or_404(ParkingLot, id=request.POST["warehouse_id"])
+    vehicles_list.vehicle = get_object_or_404(vehicle, id=request.POST["vehicle_id"])
+    vehicles_list.date_of_purchase = request.POST["date_of_purchase"]
+    vehicles_list.cost_of_purchase = request.POST["cost_of_purchase"]
+    vehicles_list.vin_number = request.POST["vin_number"]
+    vehicles_list.age = request.POST["age"]
+    vehicles_list.status = request.POST["status"]
+    vehicles_list.maintenance_cost = request.POST["maintenance_cost"]
+    vehicles_list.insurance_cost = request.POST["insurance_cost"]
+    vehicles_list.resale_value = request.POST["resale_value"]
+    vehicles_list.save()
+    return redirect(f'/organization/{org_id}/vehicles_list')
+
+def vehicles_list_deletesub(request, org_id, vl_id):
+    vehicles_list = get_object_or_404(VehiclesList, id=vl_id)
+    vehicles_list.delete()
+    return redirect(f'/organization/{org_id}/vehicles_list')
+
 
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer, DistanceTravelledSerializer, TransactionSerializer, CostProfileSerializer
+from vehicles.serializers import vehicleSerializer, OrganizationSerializer, ParkingLotSerializer, WarehouseInventorySerializer, FuelSerializer, VehicleFuelSerializer, EmissionTargetSerializer, FleetDemandSerializer, DistanceTravelledSerializer, TransactionSerializer, CostProfileSerializer, DepotSerializer, VehiclesListSerializer
 
   
 class vehicleView(APIView):    
@@ -905,6 +1053,34 @@ class CostProfileView(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = CostProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class DepotView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = Depot.objects.all()
+        serializers = DepotSerializer(result, many=True)
+        return Response({'status': 'success', "depots": serializers.data}, status=200)
+
+    def post(self, request):
+        serializer = DepotSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+class VehiclesListView(APIView):
+    def get(self, request, *args, **kwargs):
+        result = VehiclesList.objects.all()
+        serializers = VehiclesListSerializer(result, many=True)
+        return Response({'status': 'success', "vehicles_list": serializers.data}, status=200)
+
+    def post(self, request):
+        serializer = VehiclesListSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

@@ -118,3 +118,30 @@ class CostProfile(models.Model):
 
     def __str__(self):
         return f"{self.organization.org_name} - End of Year {self.end_of_year} (id {self.id})"
+
+class Depot(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='depots')
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    parking_capacity = models.IntegerField()
+    charging_points = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.organization.org_name} - {self.name} (Capacity: {self.parking_capacity}, Charging Points: {self.charging_points})"
+    
+class VehiclesList(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='vehicles_list')
+    depot = models.ForeignKey(Depot, on_delete=models.CASCADE, related_name='depot_vehicles')
+    warehouse = models.ForeignKey(ParkingLot, on_delete=models.CASCADE, related_name='warehouse_vehicles')
+    vehicle = models.ForeignKey(vehicle, on_delete=models.CASCADE, related_name='vehicle_list')
+    date_of_purchase = models.DateField()
+    cost_of_purchase = models.FloatField()
+    vin_number = models.CharField(max_length=255)
+    age = models.PositiveIntegerField()
+    status = models.CharField(max_length=255)
+    maintenance_cost = models.FloatField()
+    insurance_cost = models.FloatField()
+    resale_value = models.FloatField()
+
+    def __str__(self):
+        return f"{self.organization.org_name} - {self.depot.name} - {self.vehicle.name} (VIN: {self.vin_number})"
