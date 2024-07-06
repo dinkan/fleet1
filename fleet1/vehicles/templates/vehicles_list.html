@@ -7,27 +7,26 @@
 {% block content %}
   <h1>Vehicles List for {{ organization.org_name }}</h1>
   
-  {% if vehicles_list %}
+  {% if vehicles_with_rounded_age  %}
   <table border="1" style="border-collapse: collapse;">
     <thead>
-        <th>Warehouse</th><th>Vehicle</th><th>Date of Purchase</th><th>Cost of Purchase</th><th>VIN Number</th><th>Age</th><th>Status</th><th>Maintenance Cost</th><th>Insurance Cost</th><th>Resale Value</th><th>Depot</th><th>Actions</th>
+        <th>Warehouse</th><th>Vehicle</th><th>Date of Purchase</th><th>Cost of Purchase</th><th>VIN Number</th><th>Age</th><th>Status</th><th>Maintenance Cost</th><th>Insurance Cost</th><th>Resale Value</th><th>Depot</th><th>More</th>
     </thead>
-    {% for vehicle in vehicles_list %}
+    {% for entry in vehicles_with_rounded_age %}
       <tr>
-        <td>{{ vehicle.warehouse.name }}</td>
-        <td>{{ vehicle.vehicle.name }}</td>
-        <td>{{ vehicle.date_of_purchase }}</td>
-        <td>{{ vehicle.cost_of_purchase }}</td>
-        <td>{{ vehicle.vin_number }}</td>
-        <td>{{ vehicle.age }}</td>
-        <td>{{ vehicle.status }}</td>
-        <td>{{ vehicle.maintenance_cost }}</td>
-        <td>{{ vehicle.insurance_cost }}</td>
-        <td>{{ vehicle.resale_value }}</td>
-        <td>{{ vehicle.depot.name }}</td>
+        <td>{{ entry.vehicle.warehouse.name }}</td>
+        <td>{{ entry.vehicle.vehicle.name }}</td>
+        <td>{{ entry.vehicle.date_of_purchase }}</td>
+        <td>{{ entry.vehicle.cost_of_purchase }}</td>
+        <td>{{ entry.vehicle.vin_number }}</td>
+        <td>{{ entry.rounded_age }}</td>
+        <td>{{ entry.vehicle.status }}</td>
+        <td>{{ entry.vehicle.maintenance_cost }}</td>
+        <td>{{ entry.vehicle.insurance_cost }}</td>
+        <td>{{ entry.vehicle.resale_value }}</td>
+        <td>{{ entry.vehicle.depot.name }}</td>
         <td>
-          <a href="{% url 'vehicles_list_update' organization.id vehicle.id %}">Update</a> 
-          | <a href="{% url 'vehicles_list_deletesub' organization.id vehicle.id %}">Delete</a>
+          <a href="{% url 'vehicles_list_details' organization.id entry.vehicle.id  %}">Details</a>
         </td>
       </tr>
     {% endfor %}

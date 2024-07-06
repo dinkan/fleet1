@@ -19,6 +19,8 @@ from django.core.exceptions import ValidationError
 
 from django.utils.dateparse import parse_datetime
 
+from decimal import Decimal, ROUND_HALF_UP
+
 def vehicles(request):
   vehiclelist = vehicle.objects.all().values()
   template = loader.get_template('vehicleslist.html')
@@ -810,12 +812,58 @@ def depot_deletesub(request, org_id, dp_id):
 def vehicles_list(request, org_id):
     organization = get_object_or_404(Organization, id=org_id)
     vehicles_list = organization.vehicles_list.all()
+    vehicles_with_rounded_age = []
+    for vehicle in vehicles_list:
+        age = vehicle.age
+        rounded_age = int(age.to_integral_value(rounding=ROUND_HALF_UP)) + 1
+        vehicles_with_rounded_age.append({
+            'vehicle': vehicle,
+            'rounded_age': rounded_age
+        })
     template = loader.get_template('vehicles_list.html')
     context = {
         'organization': organization,
-        'vehicles_list': vehicles_list,
+        'vehicles_with_rounded_age': vehicles_with_rounded_age,
     }
     return HttpResponse(template.render(context, request))
+
+def vehicles_list_details(request, org_id, vl_id):
+    organization = get_object_or_404(Organization, id=org_id)
+    vehicle_entry = get_object_or_404(VehiclesList, id=vl_id)
+    age = vehicle_entry.age
+
+    rounded_age = int(age.to_integral_value(rounding=ROUND_HALF_UP)) + 1
+    try:
+        cost_profile = CostProfile.objects.get(organization=organization, end_of_year=rounded_age)
+    except CostProfile.DoesNotExist:
+        cost_profile = None
+
+    if cost_profile and cost_profile.end_of_year == rounded_age:
+        maintenance_cost_percent = Decimal(cost_profile.maintenance_cost_percent / 100)
+        insurance_cost_percent = Decimal(cost_profile.insurance_cost_percent / 100)
+        resale_value_percent = Decimal(cost_profile.resale_value_percent / 100)
+
+        proposed_maintenance_cost = vehicle_entry.cost_of_purchase * rounded_age * maintenance_cost_percent
+        proposed_insurance_cost = vehicle_entry.cost_of_purchase * rounded_age * insurance_cost_percent
+        proposed_resale_value = vehicle_entry.cost_of_purchase * rounded_age * resale_value_percent
+
+        proposed_maintenance_cost = proposed_maintenance_cost.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        proposed_insurance_cost = proposed_insurance_cost.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+        proposed_resale_value = proposed_resale_value.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+    else:
+        proposed_maintenance_cost = proposed_insurance_cost = proposed_resale_value = None
+    
+    context = {
+        'organization': organization,
+        'vehicle_entry': vehicle_entry,
+        'proposed_maintenance_cost': proposed_maintenance_cost,
+        'proposed_insurance_cost': proposed_insurance_cost,
+        'proposed_resale_value': proposed_resale_value,
+        'cost_profile': cost_profile,
+        'rounded_age':rounded_age
+    }
+    
+    return render(request, 'vehicles_list_details.html', context)
 
 def vehicles_list_create(request, org_id):
     organization = get_object_or_404(Organization, id=org_id)
@@ -839,7 +887,6 @@ def vehicles_list_createsub(request, org_id):
     date_of_purchase = request.POST["date_of_purchase"]
     cost_of_purchase = request.POST["cost_of_purchase"]
     vin_number = request.POST["vin_number"]
-    age = request.POST["age"]
     status = request.POST["status"]
     maintenance_cost = request.POST["maintenance_cost"]
     insurance_cost = request.POST["insurance_cost"]
@@ -853,7 +900,6 @@ def vehicles_list_createsub(request, org_id):
         date_of_purchase=date_of_purchase,
         cost_of_purchase=cost_of_purchase,
         vin_number=vin_number,
-        age=age,
         status=status,
         maintenance_cost=maintenance_cost,
         insurance_cost=insurance_cost,
@@ -886,7 +932,6 @@ def vehicles_list_updatesub(request, org_id, vl_id):
     vehicles_list.date_of_purchase = request.POST["date_of_purchase"]
     vehicles_list.cost_of_purchase = request.POST["cost_of_purchase"]
     vehicles_list.vin_number = request.POST["vin_number"]
-    vehicles_list.age = request.POST["age"]
     vehicles_list.status = request.POST["status"]
     vehicles_list.maintenance_cost = request.POST["maintenance_cost"]
     vehicles_list.insurance_cost = request.POST["insurance_cost"]

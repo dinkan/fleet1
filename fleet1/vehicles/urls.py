@@ -93,6 +93,7 @@ urlpatterns = [
     path('organization/<int:org_id>/depot_deletesub/<int:dp_id>', views.depot_deletesub, name='depot_deletesub'),
     path('api/depots/', views.DepotView.as_view()),
     path('organization/<int:org_id>/vehicles_list', views.vehicles_list, name='vehicles_list'),
+    path('organization/<int:org_id>/vehicles_list_details/<int:vl_id>', views.vehicles_list_details, name='vehicles_list_details'),
     path('organization/<int:org_id>/vehicles_list_create', views.vehicles_list_create, name='vehicles_list_create'),
     path('organization/<int:org_id>/vehicles_list_createsub', views.vehicles_list_createsub, name='vehicles_list_createsub'),
     path('organization/<int:org_id>/vehicles_list_update/<int:vl_id>', views.vehicles_list_update, name='vehicles_list_update'),

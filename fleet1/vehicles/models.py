@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+import decimal
 # Create your models here.
 
 
@@ -135,13 +136,19 @@ class VehiclesList(models.Model):
     warehouse = models.ForeignKey(ParkingLot, on_delete=models.CASCADE, related_name='warehouse_vehicles')
     vehicle = models.ForeignKey(vehicle, on_delete=models.CASCADE, related_name='vehicle_list')
     date_of_purchase = models.DateField()
-    cost_of_purchase = models.FloatField()
+    cost_of_purchase = models.DecimalField(max_digits=10, decimal_places=2)
     vin_number = models.CharField(max_length=255)
-    age = models.PositiveIntegerField()
     status = models.CharField(max_length=255)
-    maintenance_cost = models.FloatField()
-    insurance_cost = models.FloatField()
-    resale_value = models.FloatField()
+    maintenance_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    insurance_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    resale_value = models.DecimalField(max_digits=10, decimal_places=2)
+
+    @property
+    def age(self):
+        current_date = timezone.now().date()
+        delta = current_date - self.date_of_purchase
+        age_in_years = decimal.Decimal(delta.days) / decimal.Decimal(365)
+        return age_in_years.quantize(decimal.Decimal('0.0001'), rounding=decimal.ROUND_HALF_UP)
 
     def __str__(self):
         return f"{self.organization.org_name} - {self.depot.name} - {self.vehicle.name} (VIN: {self.vin_number})"

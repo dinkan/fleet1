@@ -1,0 +1,35 @@
+{% extends "mastertemplate.html" %}
+
+{% block title %}
+  {{ organization.org_name }} Vehicle List Details
+{% endblock %}
+
+{% block content %}
+  <h1>Vehicle List Details of {{ vehicle_entry.vehicle.name }} ({{ vehicle_entry.vin_number }})</h1>
+  
+  <p><strong>Organization:</strong> {{ organization.org_name }}</p>
+  <p><strong>Warehouse:</strong> {{ vehicle_entry.warehouse.name }}</p>
+  <p><strong>Vehicle:</strong> {{ vehicle_entry.vehicle.name }}</p>
+  <p><strong>Date of Purchase:</strong> {{ vehicle_entry.date_of_purchase }}</p>
+  <p><strong>Cost of Purchase:</strong> {{ vehicle_entry.cost_of_purchase }}</p>
+  <p><strong>VIN Number:</strong> {{ vehicle_entry.vin_number }}</p>
+  <p><strong>Age:</strong> {{ rounded_age }}</p>
+  <p><strong>Status:</strong> {{ vehicle_entry.status }}</p>
+  <p><strong>Maintenance Cost:</strong> {{ vehicle_entry.maintenance_cost }}
+    {% if proposed_maintenance_cost is not None %} <strong>Proposed:</strong> {{ proposed_maintenance_cost }} {% endif %}</p>
+  <p><strong>Insurance Cost:</strong> {{ vehicle_entry.insurance_cost }}
+    {% if proposed_insurance_cost is not None %} <strong>Proposed:</strong> {{ proposed_insurance_cost }} {% endif %}</p>
+  <p><strong>Resale Value:</strong> {{ vehicle_entry.resale_value }}
+    {% if proposed_resale_value is not None %} <strong>Proposed:</strong> {{ proposed_resale_value }} {% endif %}</p>
+  <p><strong>Depot:</strong> {{ vehicle_entry.depot.name }}</p>
+  
+  {% if cost_profile is None %}
+  <p><strong>Note:</strong> No cost profile available for the current year.</p>
+  {% endif %}
+
+  <p><a href="{% url 'vehicles_list_update' organization.id vehicle_entry.id %}">Update the entry</a></p>
+  <p><a href="{% url 'vehicles_list_deletesub' organization.id vehicle_entry.id %}">Delete this entry</a></p>
+
+  <hr>
+  <p>Back to <a href="{% url 'vehicles_list' organization.id %}">Vehicles List</a></p>
+{% endblock %}
